@@ -1,0 +1,18 @@
+Nome: Isaac de Castro Silva
+
+DATA DE NASCIMENTO
+
+Isaac nasceu em 10/09/2007.
+
+A idade de Isaac deve ser calculada a partir da data de nascimento quando necessário.
+Não trate uma idade registrada anteriormente como informação permanente.
+
+Cargo: Desenvolvedor de Software Júnior
+
+Isaac de Castro Silva é desenvolvedor de software júnior e atua no desenvolvimento e manutenção de sistemas corporativos web.
+
+Possui experiência com automação de processos, integração de APIs e manutenção de aplicações em produção.
+
+Também é fundador e desenvolvedor da Nexis, empresa de tecnologia na qual desenvolve sistemas sob encomenda, automações e soluções para digitalização de fluxos de trabalho de clientes empresariais.
+
+Isaac cursa Análise e Desenvolvimento de Sistemas e busca crescer profissionalmente nas áreas de desenvolvimento e integração de sistemas, combinando conhecimento técnico com visão de negócio.

@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "PortfolioAI - Backend",
+            "request": "launch",
+            "mainClass": "com.isaac.portfolioai.PortfolioaiApplication",
+            "projectName": "portfolioai",
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal"
+        }
+    ]
+}

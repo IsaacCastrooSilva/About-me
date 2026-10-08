@@ -1,0 +1,17 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.gradle.enabled": false,
+    "java.import.exclusions": ["**/node_modules/**", "**/.metadata/**", "**/archetype-resources/**", "**/META-INF/maven/**", "portfolioai/**", "**/portfolioai/portfolioai/**"],
+    "maven.executable.preferMavenWrapper": true,
+    "maven.excludedFolders": ["**/.*", "**/node_modules", "**/target", "**/bin", "**/archetype-resources", "portfolioai", "**/portfolioai/portfolioai"],
+    "files.encoding": "utf8",
+    "files.exclude": {
+        "**/.idea": true,
+        "**/target": true
+    },
+    "search.exclude": {
+        "**/target": true,
+        "data/**": true,
+        "portfolioai/**": true
+    }
+}

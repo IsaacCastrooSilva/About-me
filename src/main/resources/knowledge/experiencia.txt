@@ -1,0 +1,51 @@
+EXPERIÊNCIA PROFISSIONAL
+
+ITPOWER
+
+Cargo: Desenvolvedor de Software Júnior
+Situação: Atual
+
+Isaac atua no desenvolvimento e manutenção de sistemas corporativos utilizando tecnologias web.
+
+Principais atividades:
+
+- Desenvolvimento e manutenção de sistemas corporativos.
+- Atuação no projeto:
+
+  Rodar - Desenvolvendo melhorias, aplicações, sustentações e comandando como TechLead Júnior.
+
+- Automação de processos.
+- Desenvolvimento e integração de APIs.
+- Comunicação entre sistemas e plataformas externas.
+- Implementação de rotinas automatizadas.
+- Integrações com serviços de mensageria e cobrança.
+- Correção de bugs.
+- Ajustes de layout.
+- Revisão de fluxos.
+- Manutenção de funcionalidades em ambiente de produção.
+- Participação em testes.
+- Participação em homologação UAT.
+- Otimização de processos internos.
+- Trabalho utilizando metodologias ágeis.
+- Versionamento de código.
+
+
+NEXIS
+
+Cargo: Fundador e Desenvolvedor
+Situação: Atual
+
+Isaac é fundador e desenvolvedor da Nexis.
+
+A Nexis trabalha com sistemas sob encomenda, automação e digitalização de fluxos de trabalho para empresas.
+
+Principais atividades:
+
+- Desenvolvimento de soluções personalizadas para clientes.
+- Participação desde o levantamento do problema até a entrega da solução.
+- Elaboração de propostas comerciais envolvendo automação e inteligência artificial.
+- Definição do escopo das soluções.
+- Criação de metodologia comercial própria.
+- Criação de e-mails de prospecção.
+- Desenvolvimento de roteiro de discovery.
+- Desenvolvimento do diagnóstico chamado "Mapa de Gargalos".

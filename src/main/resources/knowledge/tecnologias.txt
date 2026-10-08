@@ -1,0 +1,78 @@
+TECNOLOGIAS E COMPETÊNCIAS DE ISAAC DE CASTRO SILVA
+
+
+EXPERIÊNCIA PROFISSIONAL PRINCIPAL
+
+No trabalho como Desenvolvedor de Software Júnior, Isaac utiliza principalmente:
+
+- ColdFusion.
+- SQL Server.
+- Desenvolvimento e manutenção de sistemas corporativos web.
+- APIs e integrações.
+- Automação de processos.
+- Correção de bugs.
+- Manutenção de aplicações em produção.
+- Testes.
+- Homologação UAT.
+- Versionamento de código.
+
+Java aparece ocasionalmente em seu contexto profissional, mas não deve ser apresentado como uma das principais tecnologias utilizadas diariamente em seu trabalho.
+
+
+TECNOLOGIAS EM ESTUDO E DESENVOLVIMENTO
+
+Isaac estuda e pratica tecnologias com o objetivo de ampliar sua formação como desenvolvedor.
+
+Entre elas estão:
+
+- Java.
+- Spring Boot.
+- Programação Orientada a Objetos.
+- Python.
+- JavaScript.
+- React.
+- Desenvolvimento de APIs.
+- Inteligência Artificial.
+
+Essas tecnologias não devem ser automaticamente apresentadas como tecnologias utilizadas diariamente no trabalho profissional.
+
+
+VERSIONAMENTO
+
+Isaac possui conhecimento e experiência com:
+
+- Git.
+- GitHub.
+- Versionamento de código.
+
+
+INTELIGÊNCIA ARTIFICIAL
+
+Isaac possui grande interesse em Inteligência Artificial e está desenvolvendo seus conhecimentos nessa área.
+
+Seus estudos incluem:
+
+- Inteligência Artificial.
+- LLMs.
+- Integração de modelos de IA com aplicações.
+- RAG.
+- Embeddings.
+- Agentes de IA.
+- IA agêntica.
+
+Seu objetivo profissional de longo prazo é evoluir em direção à Engenharia de Inteligência Artificial.
+
+Isaac não deve ser apresentado atualmente como Engenheiro de IA ou especialista em IA.
+
+
+IMPORTANTE SOBRE PROJETOS
+
+Conhecer uma tecnologia não significa que todos os projetos de Isaac utilizem essa tecnologia.
+
+Quando uma pergunta for sobre as tecnologias utilizadas em um projeto específico, a resposta deve ser baseada nas informações daquele projeto.
+
+Por exemplo:
+
+- SQL Server faz parte da experiência profissional de Isaac.
+- Isso não significa que o Portfolio AI atualmente utilize SQL Server.
+- React faz parte dos estudos de Isaac e também está planejado para o frontend do Portfolio AI.

@@ -1,0 +1,191 @@
+PROJETOS DE ISAAC DE CASTRO SILVA
+
+
+CUBE IA
+
+Cube IA é uma inteligência artificial desenvolvida por Isaac e integrada ao seu portfólio.
+
+O sistema permite que visitantes conversem com uma IA capaz de responder perguntas sobre Isaac, incluindo sua experiência profissional, projetos, tecnologias, formação e informações pessoais disponibilizadas por ele.
+
+A Cube AI utiliza recuperação semântica de conhecimento, memória de conversa e modelos de linguagem para produzir respostas contextualizadas.
+
+RAG, memória, embeddings, persistência, Gemini, Groq e a interface em React são componentes internos da arquitetura da Cube AI e não projetos separados.
+
+
+COMPONENTES DO CUBE IA
+
+Todos os itens descritos abaixo fazem parte do mesmo Cube IA.
+Eles não são projetos independentes.
+
+
+Backend do CUBE IA:
+- Java.
+- Spring Boot.
+- API REST.
+
+
+Inteligência Artificial do CUBE IA:
+- Integração com modelos de linguagem.
+- Gemini como provedor principal.
+- Groq como fallback caso o provedor principal esteja indisponível.
+
+
+RAG do CUBE IA:
+- O RAG é um componente interno do CUBE IA e não um projeto separado.
+- Base de conhecimento própria sobre Isaac.
+- Divisão da base em chunks.
+- Geração de embeddings.
+- Busca semântica.
+- Similaridade de cosseno.
+- Recuperação de trechos relevantes antes da geração da resposta.
+- Uso das informações recuperadas como fonte factual para geração das respostas.
+- Regras de grounding para reduzir respostas não sustentadas pela base de conhecimento.
+
+
+Memória conversacional do CUBE IA:
+- A memória conversacional é um componente interno do Portfolio AI e não um projeto separado.
+- Identificação das conversas através de conversationId.
+- Persistência do histórico das conversas em banco de dados H2.
+- Armazenamento das mensagens do usuário e das respostas da IA.
+- Recuperação automática do histórico persistido após reinicialização da aplicação.
+- Uso de uma janela recente do histórico em memória RAM para fornecer contexto à IA.
+- Uso das perguntas anteriores do usuário como contexto auxiliar para o RAG.
+- Compactação do histórico para controlar o tamanho do contexto enviado ao modelo.
+- Persistência do resumo da conversa.
+- Persistência da categoria ativa da conversa.
+
+
+Persistência do CUBE IA:
+- A camada de persistência das conversas está implementada.
+- O projeto utiliza JPA/Hibernate para persistência.
+- H2 é utilizado atualmente como banco de dados da aplicação.
+- As conversas e mensagens são armazenadas de forma persistente.
+- O histórico pode ser recuperado mesmo após a aplicação ser reiniciada.
+- A memória conversacional também possui informações persistentes.
+- O H2 é a solução utilizada na etapa atual do desenvolvimento.
+- O banco de dados definitivo para produção ainda não está definido.
+- SQL Server não faz parte atualmente da implementação do CUBE IA.
+
+
+Frontend do CUBE IA:
+- O frontend está sendo desenvolvido com React.
+- O projeto utiliza Vite no ambiente de desenvolvimento do frontend.
+- A primeira interface funcional de chat já foi criada.
+- O frontend já realiza requisições para a API REST do backend em Spring Boot.
+- As mensagens enviadas pelo usuário no frontend são processadas pelo backend e as respostas da IA são exibidas na interface.
+- A interface ainda está em desenvolvimento e não deve ser apresentada como concluída.
+
+
+INTEGRAÇÃO ATUAL DO CUBE IA
+
+Atualmente existe integração funcional entre:
+
+Frontend React
+→ API REST Spring Boot
+→ recuperação de conhecimento por RAG
+→ memória conversacional
+→ Gemini ou Groq
+→ resposta retornada ao frontend.
+
+Essa arquitetura faz parte de um único projeto chamado CUBE IA.
+
+
+IMPORTANTE SOBRE O CUBE IA
+
+RAG não é um projeto separado.
+
+Recuperação de conhecimento não é um projeto separado.
+
+Memória conversacional não é um projeto separado.
+
+A integração com Gemini e Groq não é um projeto separado.
+
+Persistência com JPA/Hibernate e H2 não é um projeto separado.
+
+Frontend React não é um projeto separado.
+
+Todos esses elementos são componentes ou tecnologias utilizadas dentro do
+projeto CUBE IA.
+
+As tecnologias que Isaac conhece, estuda ou utiliza profissionalmente não
+devem ser automaticamente apresentadas como tecnologias utilizadas no
+CUBE IA.
+
+Isaac possui experiência profissional com SQL Server, mas isso não significa
+que o Portfolio AI utilize ou utilizará SQL Server.
+
+O banco de dados definitivo para produção ainda não está definido.
+
+Se o motivo de uma decisão técnica não estiver informado nesta base, não
+deve ser inventado.
+
+
+==================================================
+CANTINA ESCOLAR
+==================================================
+
+Tipo: Projeto acadêmico.
+
+Isaac desenvolveu um site completo para uma cantina escolar.
+
+O projeto possui:
+- Front-end.
+- Back-end.
+- Banco de dados.
+- Cadastro de produtos.
+- Cadastro e gerenciamento de pedidos.
+- Cadastro de usuários.
+
+
+==================================================
+LANDING PAGE DA NEXIS
+==================================================
+
+Tipo: Projeto de desenvolvimento web.
+
+Isaac desenvolveu a Landing Page da Nexis.
+
+O projeto consiste em uma página de apresentação da empresa Nexis e dos
+serviços oferecidos pela empresa.
+
+
+==================================================
+ZURICH LIFE
+==================================================
+
+Tipo: Projeto profissional.
+
+Isaac participa do projeto Zurich Life durante sua atuação como
+Desenvolvedor de Software Júnior na ITpower.
+
+Sua atuação está relacionada ao desenvolvimento e manutenção de sistemas
+corporativos, automação de processos e melhorias operacionais.
+
+
+==================================================
+RODAR
+==================================================
+
+Tipo: Projeto profissional.
+
+Isaac participa do projeto Rodar durante sua atuação como
+Desenvolvedor de Software Júnior na ITpower.
+
+Sua atuação está relacionada ao desenvolvimento e manutenção de sistemas
+corporativos, automação de processos e melhorias operacionais.
+
+
+==================================================
+REGRAS PARA IDENTIFICAÇÃO DOS PROJETOS
+==================================================
+
+Os projetos registrados nesta base são:
+
+- Portfolio AI.
+- Cantina Escolar.
+- Landing Page da Nexis.
+- Zurich Life.
+- Rodar.
+
+Componentes, tecnologias, cursos, estudos e interesses não devem ser
+apresentados como projetos adicionais.
