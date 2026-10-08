@@ -1,0 +1,155 @@
+.app-apenas-ia { display: flex; min-height: 100dvh; }
+.sidebar { position: sticky; top: 0; display: flex; flex-direction: column; width: 244px; height: 100dvh; flex-shrink: 0; padding: 32px 18px 22px; background: #eae7df; border-right: 1px solid #000000; }
+.sidebar-logo { display: flex; align-items: center; gap: 11px; padding: 0 12px; margin-bottom: 35px; }
+.sidebar-logo strong { font-size: 17px; font-weight: 550; letter-spacing: -.5px; }
+.cubo-clean { display: block; width: 27px; height: 27px; flex-shrink: 0; overflow: hidden; border-radius: 2px; }
+.cubo-clean rect { stroke: none; }
+.cubo-giro-linha { animation: girar-linha 240ms cubic-bezier(.4, 0, .2, 1) forwards; }
+.cubo-giro-coluna { animation: girar-coluna 240ms cubic-bezier(.4, 0, .2, 1) forwards; }
+@keyframes girar-linha { to { transform: translateX(-10px); } }
+@keyframes girar-coluna { to { transform: translateY(-10px); } }
+.sidebar-logo .cubo-clean { width: 23px; height: 23px; }
+.nova-conversa { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #000000; background: transparent; border-radius: 7px; font-size: 12px; }
+.nova-conversa:hover:not(:disabled) { background: #e4e0d6; }
+.sidebar-legenda { font-size: 9px; letter-spacing: 1.5px; color: #000000; margin: 32px 12px 15px; }
+.lista-conversas { flex: 1; min-height: 0; overflow-y: auto; }
+.historico-vazio { color: #000000; font-size: 11px; padding: 0 12px; line-height: 1.7; }
+.lista-conversas button { display: flex; align-items: center; gap: 9px; width: 100%; border: 0; background: transparent; padding: 11px 12px; border-radius: 6px; text-align: left; font-size: 12px; margin-bottom: 4px; }
+.lista-conversas button svg { width: 16px; flex-shrink: 0; color: #000000; }
+.lista-conversas button span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lista-conversas button:hover, .lista-conversas button[aria-current] { background: #e0dcd2; }
+.sidebar-rodape { font-size: 10px; color: #000000; padding: 18px 12px 0; border-top: 1px solid #000000; }
+main { flex: 1; min-width: 0; min-height: 100dvh; display: flex; align-items: center; padding: 38px; }
+.secao-ia { width: 100%; max-width: 760px; margin: auto; }
+.chat-painel { width: 100%; }
+.compositor { display: flex; align-items: center; gap: 16px; min-height: 58px; padding: 10px 13px 10px 19px; border: 0; background: #e8e4db; border-radius: 7px; transition: background .2s; }
+.compositor:focus-within { background: #e4e0d6; }
+.compositor textarea { flex: 1; min-width: 0; width: 100%; border: 0; outline: none; resize: none; max-height: 180px; padding: 5px 0; background: transparent; font-size: 14px; line-height: 1.6; }
+.compositor textarea::placeholder { color: #000000; }
+.enviar { display: grid; place-items: center; flex-shrink: 0; width: 34px; height: 34px; border: 0; border-radius: 5px; background: #ded9cf; color: #000000; transition: background .2s; }
+.enviar:hover:not(:disabled) { background: #d5d0c6; }
+.enviar:disabled { background: #dcd7cd; color: #000000; }
+.perguntas-basicas { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; margin-top: 14px; }
+.perguntas-basicas button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; font-size: 14px; font-weight: 500; line-height: 18px; white-space: nowrap; color: #000000; padding: 7px 10px; border: 0; border-radius: 8px; background: #eae7df; transition: background .2s, color .2s; }
+.perguntas-basicas button:hover:not(:disabled) { background: #e5e1d7; color: #000000; }
+.perguntas-basicas button:disabled { opacity: 1; }
+.mensagens { max-height: calc(100dvh - 230px); overflow-y: auto; padding: 16px 8px; margin-bottom: 15px; scrollbar-width: thin; scrollbar-color: #c9c3b8 transparent; }
+.mensagem { font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; margin-bottom: 26px; }
+.mensagem.user { background: #e5e1d7; width: fit-content; max-width: 85%; margin-left: auto; border-radius: 10px 10px 2px 10px; padding: 10px 16px; white-space: pre-wrap; }
+.mensagem.user p { margin: 0; }
+.autor { display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+.autor .cubo-clean { width: 19px; height: 19px; gap: 1.5px; }
+.markdown p { margin: 0 0 12px; }
+.markdown pre { overflow-x: auto; padding: 12px; background: #e8e4da; }
+.markdown code { background: #e8e4da; }
+.markdown a { text-decoration: underline; color: #000000; }
+.markdown table { display: block; overflow-x: auto; border-collapse: collapse; }
+.markdown td, .markdown th { padding: 8px; border: 1px solid #000000; }
+.markdown img { max-width: 100%; }
+.erro { color: #000000; }
+.resposta-pendente { color: #000000; font-size: 12px; padding-bottom: 20px; }
+.icone-botao { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; background: transparent; border: 0; border-radius: 5px; }
+.icone-botao:hover { background: #e0dcd2; }
+.abrir-sidebar, .fechar-sidebar, .fundo-sidebar { display: none; }
+@media(max-width:760px) {
+  main { padding: 70px 20px 30px; }
+  .sidebar { position: fixed; z-index: 20; left: 0; transform: translateX(-100%); visibility: hidden; transition: transform 240ms cubic-bezier(.22, 1, .36, 1), visibility 0s 240ms; }
+  .menu-aberto .sidebar { transform: translateX(0); visibility: visible; transition-delay: 0s; }
+  .abrir-sidebar { display: grid; position: fixed; top: 18px; left: 18px; }
+  .fechar-sidebar { display: grid; margin-left: auto; }
+  .sidebar-logo { padding-right: 0; }
+  .menu-aberto .fundo-sidebar { display: block; position: fixed; inset: 0; border: 0; background: #22222235; z-index: 19; }
+  .compositor { gap: 12px; padding-left: 13px; }
+  .compositor textarea { font-size: 16px; }
+  .perguntas-basicas { gap: 6px; }
+  .perguntas-basicas button { padding-inline: 10px; }
+  .mensagens { max-height: calc(100dvh - 270px); }
+}
+
+.conteudo-sidebar { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.sidebar-logo { gap: 9px; padding-inline: 4px; }
+.alternar-sidebar { margin-left: auto; flex-shrink: 0; }
+@media (min-width: 761px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    z-index: 20;
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 240ms cubic-bezier(.22, 1, .36, 1), visibility 0s;
+  }
+  .app-apenas-ia main {
+    margin-left: 244px;
+    transition: margin-left 240ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .sidebar-recolhida .sidebar {
+    transform: translateX(-100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 240ms cubic-bezier(.22, 1, .36, 1), visibility 0s 240ms;
+  }
+  .sidebar-recolhida main { margin-left: 0; }
+  .abrir-sidebar {
+    display: grid;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 160ms ease, visibility 0s 160ms;
+  }
+  .sidebar-recolhida .abrir-sidebar {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 160ms ease 100ms, visibility 0s;
+  }
+}
+@media (max-width: 760px) { .alternar-sidebar { display: none; } }
+
+/* Entrada suave quando a resposta da IA chega. */
+.mensagem.ai { animation: resposta-chegando 420ms cubic-bezier(.22, 1, .36, 1) both; }
+.mensagem.ai .markdown { animation: resposta-chegando 480ms cubic-bezier(.22, 1, .36, 1) 70ms both; }
+@keyframes resposta-chegando {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sidebar-logo strong, .nova-conversa, .icone-botao, .autor { color: #000000; }
+.lista-conversas button[aria-current] { box-shadow: inset 2px 0 #000000; color: #000000; }
+
+.perguntas-basicas button > span { flex-shrink: 0; line-height: 1.3; }
+.perguntas-basicas button > svg { order: -1; width: 16px; height: 16px; flex-shrink: 0; color: #000000; stroke-width: 1.5; }
+
+
+.abrir-sidebar:focus-visible, .alternar-sidebar:focus-visible, .fechar-sidebar:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background: #e0dcd2;
+}
+
+.convite-conversa { text-align: center; margin-bottom: 30px; }
+.convite-conversa h1 { font-size: clamp(23px, 3vw, 32px); line-height: 1.25; font-weight: 500; letter-spacing: -.9px; margin: 0 0 12px; color: #000; }
+.convite-conversa p { margin: 0; font-size: 14px; line-height: 1.6; color: #000; }
+.campo-pergunta { position: relative; flex: 1; min-width: 0; }
+.campo-pergunta textarea { position: relative; display: block; width: 100%; z-index: 1; }
+.placeholder-rotativo { position: absolute; inset: 0; display: flex; align-items: center; overflow: hidden; pointer-events: none; color: #858078; font-size: 14px; line-height: 1.6; }
+.placeholder-rotativo > span { display: block; width: 100%; }
+.placeholder-rotativo > .entrando { animation: sugestao-entrar var(--tempo-transicao) ease-in-out both; }
+.placeholder-rotativo > .saindo { animation: sugestao-sair var(--tempo-transicao) ease-in-out both; }
+@keyframes sugestao-entrar {
+  from { transform: translateY(-10px); opacity: 0; filter: blur(3px); }
+  to { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+@keyframes sugestao-sair {
+  from { transform: translateY(0); opacity: 1; filter: blur(0); }
+  to { transform: translateY(10px); opacity: 0; filter: blur(3px); }
+}
+@media(max-width:760px) {
+  .convite-conversa { margin-bottom: 25px; }
+  .convite-conversa p { font-size: 12px; }
+  .placeholder-rotativo { font-size: 13px; line-height: 1.5; }
+  .campo-pergunta textarea { min-height: 42px; }
+}

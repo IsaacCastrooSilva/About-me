@@ -1,6 +1,31 @@
-# PortfolioAI — backend
+# About Me
 
-API Java 21 com Spring Boot, Maven, JPA e banco H2 local.
+Portfólio com chat de inteligência artificial. O backend Java 21 com Spring
+Boot, Maven, JPA e H2 fica na raiz; o frontend React/Vite fica em `frontend/`.
+
+## Executar o projeto completo
+
+Preencha as chaves somente no `.env` da raiz. No primeiro terminal PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\backend.ps1 iniciar
+```
+
+Em outro terminal, a partir da raiz, com Node.js/npm instalados:
+
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd run dev
+```
+
+Abra a URL exibida pelo Vite. O frontend usa por padrão
+`http://localhost:8080/api/chat`. Para mudar o endereço, copie
+`frontend/.env.example` para `frontend/.env` e ajuste `VITE_CHAT_API_URL`.
+As chaves Gemini e Groq pertencem exclusivamente ao backend.
+
+Para validar o frontend, execute `npm.cmd run build` e `npm.cmd run lint`
+na pasta `frontend`.
 
 ## Usar no VS Code
 

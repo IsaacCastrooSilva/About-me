@@ -45,3 +45,10 @@ build/
 
 ### Copia inicial duplicada (preservada apenas localmente) ###
 /portfolioai/
+
+### Frontend ###
+node_modules/
+.npm-cache/
+dist/
+dist-ssr/
+*.local
