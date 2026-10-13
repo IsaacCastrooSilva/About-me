@@ -31,66 +31,6 @@ const sugestoes = [
   { icone: "verified", titulo: "Habilidades", pergunta: "Quais são as principais habilidades do Isaac?" },
   { icone: "fileplus", titulo: "Contato", pergunta: "Como posso entrar em contato com o Isaac?" },
 ];
-const CORES_CUBO = ["#ffd500", "#c41e3a", "#ff5800", "#009e60", "#0051ba"];
-function embaralharCubo(rodada) {
-  return Array.from({ length: 9 }, (_, i) => (i * 2 + Math.floor(i / 3) + rodada) % CORES_CUBO.length);
-}
-
-function CuboQuadrado({ carregando = false, resolvido = false, rodada = 0 }) {
-  const [quadro, setQuadro] = useState(() => ({ pecas: embaralharCubo(rodada), movimento: null, passo: 0 }));
-  const pecasRef = useRef(quadro.pecas);
-  const primeiraVez = useRef(true);
-
-  useEffect(() => {
-    if (primeiraVez.current && !carregando && !resolvido) {
-      primeiraVez.current = false;
-      return;
-    }
-    primeiraVez.current = false;
-    let cancelado = false;
-    let timer;
-    let passo = 0;
-    const destino = resolvido ? Array(9).fill(rodada % CORES_CUBO.length) : embaralharCubo(rodada);
-    const mover = () => {
-      if (cancelado) return;
-      const eixo = carregando && Math.floor(passo / 9) % 2 ? 'coluna' : 'linha';
-      const faixa = Math.floor(passo / 3) % 3;
-      const indices = [0, 1, 2].map(i => eixo === 'linha' ? faixa * 3 + i : i * 3 + faixa);
-      const montando = resolvido || (carregando && Math.floor(passo / 9) % 2 === 0);
-      const novaCor = montando ? rodada % CORES_CUBO.length : destino[indices[passo % 3]];
-      const antes = pecasRef.current;
-      setQuadro({ pecas: antes, movimento: { eixo, faixa, novaCor }, passo: passo++ });
-      timer = setTimeout(() => {
-        const depois = [...antes];
-        indices.forEach((indice, i) => { depois[indice] = i < 2 ? antes[indices[i + 1]] : novaCor; });
-        pecasRef.current = depois;
-        setQuadro({ pecas: depois, movimento: null, passo });
-        if (carregando || passo < 9) timer = setTimeout(mover, 65);
-      }, 240);
-    };
-    mover();
-    return () => { cancelado = true; clearTimeout(timer); };
-  }, [carregando, resolvido, rodada]);
-
-  const movimento = quadro.movimento;
-  const desenhar = (cor, x, y, key) => <rect key={key} x={x + 1} y={y + 1} width="8" height="8" rx="1" fill={CORES_CUBO[cor]} />;
-  return <svg className="cubo-clean" viewBox="0 0 30 30" aria-hidden="true">
-
-    {quadro.pecas.map((cor, i) => {
-      const ativa = movimento && (movimento.eixo === 'linha' ? Math.floor(i / 3) : i % 3) === movimento.faixa;
-      return ativa ? null : desenhar(cor, i % 3 * 10, Math.floor(i / 3) * 10, i);
-    })}
-    {movimento && <g key={quadro.passo} className={'cubo-giro-' + movimento.eixo}>
-      {[0, 1, 2, 3].map(i => {
-        const linha = movimento.eixo === 'linha';
-        const indice = linha ? movimento.faixa * 3 + i : i * 3 + movimento.faixa;
-        return desenhar(i === 3 ? movimento.novaCor : quadro.pecas[indice], linha ? i * 10 : movimento.faixa * 10, linha ? movimento.faixa * 10 : i * 10, i);
-      })}
-    </g>}
-  </svg>;
-}
-function Marca() { return <CuboQuadrado />; }
-
 const FRASES_CAMPO = [
   "O que você quer saber sobre o Isaac?",
   "Pergunte sobre os projetos dele…",
@@ -126,65 +66,89 @@ function criarConversa() {
   return { id: crypto.randomUUID(), titulo: "Nova conversa", mensagens: [] };
 }
 
-const PERGUNTAS_REDE = [
-  { titulo: "Sobre mim", pergunta: "Quem é o Isaac?", x: 28, y: 17 },
-  { titulo: "Trajetória", pergunta: "Como começou a trajetória do Isaac na tecnologia?", x: 49, y: 10 },
-  { titulo: "Projetos", pergunta: "Quais projetos o Isaac desenvolveu?", x: 73, y: 19 },
-  { titulo: "Habilidades", pergunta: "Quais são as principais habilidades do Isaac?", x: 85, y: 40 },
-  { titulo: "Tecnologias", pergunta: "Quais tecnologias o Isaac utiliza nos projetos?", x: 82, y: 65 },
-  { titulo: "Cube AI", pergunta: "O que é a Cube AI e como ela funciona?", x: 67, y: 84 },
-  { titulo: "Objetivos", pergunta: "Quais são os próximos objetivos do Isaac?", x: 45, y: 88 },
-  { titulo: "Estudos", pergunta: "O que o Isaac está estudando atualmente?", x: 24, y: 77 },
-  { titulo: "Interesses", pergunta: "Quais são os interesses do Isaac além da tecnologia?", x: 13, y: 53 },
-  { titulo: "Contato", pergunta: "Como posso entrar em contato com o Isaac?", x: 14, y: 31 },
+const FRASES_ABERTURA = [
+  "Olá, usuário!",
+  "Esse é o portifolio virtual do isaac, bem legal né?",
+  "Quer saber mais sobre ele?",
+  "Explore essa página!",
 ];
-
-function CerebroInterativo({ onPerguntar, carregando }) {
-  const [selecionada, setSelecionada] = useState(0);
-  const atual = PERGUNTAS_REDE[selecionada];
-  return <section className="cerebro-secao" aria-labelledby="cerebro-titulo">
-    <div className="cerebro-intro"><div><p className="rotulo">ISAAC · UM MAPA PARA ME CONHECER</p><h1 id="cerebro-titulo">Tudo começa com<br />uma <em>conexão.</em></h1></div><p>Explore as ideias que se conectam por aqui.<br />Cada ponto é uma pergunta sobre mim.</p></div>
-    <div className="cerebro-experiencia">
-      <div className="cerebro-mapa" role="group" aria-label="Escolha uma pergunta sobre Isaac">
-        <span className="mapa-legenda" aria-hidden="true">CONEXÕES / 01—10</span>
-        <svg viewBox="0 0 640 440" preserveAspectRatio="none" className="cerebro-fios" aria-hidden="true">
-          <path className="cerebro-contorno" d="M180 75C230 15 295 12 321 52C355 10 425 37 462 90C520 107 556 172 534 215C559 263 530 326 469 342C444 403 371 413 321 369C275 415 198 388 177 337C106 320 87 264 112 219C76 161 121 88 180 75Z" />
-          {PERGUNTAS_REDE.map((no, indice) => <g key={no.titulo} className={selecionada === indice ? "conexao ativa" : "conexao"}>
-            {Array.from({ length: 7 }, (_, fio) => <path key={fio} d={`M ${no.x * 6.4} ${no.y * 4.4} Q ${320 + (no.x - 50) * 3 + fio * 3} ${228 + (no.y - 50) * 2} ${294 + fio * 8} ${204 + (indice % 3) * 12}`} />)}
-            <path className="conexao-periferica" d={`M ${no.x * 6.4} ${no.y * 4.4} L ${PERGUNTAS_REDE[(indice + 1) % PERGUNTAS_REDE.length].x * 6.4} ${PERGUNTAS_REDE[(indice + 1) % PERGUNTAS_REDE.length].y * 4.4}`} />
-          </g>)}
-          {Array.from({ length: 49 }, (_, indice) => { const x = indice % 7; const y = Math.floor(indice / 7); return <rect key={indice} x={243 + x * 22} y={151 + y * 22} width="22" height="22" fill="#16754e" opacity={((x * 3 + y * 2) % 7 + 1) * .045} />; })}
-          <circle className="cerebro-pulso" cx="320" cy="220" r="42" />
-        </svg>
-        <div className="cerebro-centro" aria-hidden="true"><span>Isaac</span><small>IDEIAS CONECTADAS</small></div>
-        {PERGUNTAS_REDE.map((no, indice) => <button key={no.titulo} className={"cerebro-no" + (selecionada === indice ? " selecionado" : "")} style={{ left: `${no.x}%`, top: `${no.y}%` }} onClick={() => setSelecionada(indice)} aria-label={no.pergunta} aria-pressed={selecionada === indice} aria-controls="pergunta-rede"><span className="no-bolinha" aria-hidden="true" /><span className="no-titulo">{no.titulo}</span></button>)}
-        <span className="mapa-rodape" aria-hidden="true">ESCOLHA UM PONTO. SIGA SUA CURIOSIDADE.</span>
-      </div>
-      <div className="cerebro-card" id="pergunta-rede" aria-live="polite" aria-atomic="true"><span className="card-indice">{String(selecionada + 1).padStart(2, "0")} / {String(PERGUNTAS_REDE.length).padStart(2, "0")}</span><p className="rotulo">{atual.titulo}</p><h2>{atual.pergunta}</h2><p className="card-descricao">Uma pergunta, um novo caminho para me conhecer.</p><button className="card-perguntar" type="button" disabled={carregando} onClick={() => onPerguntar(atual.pergunta)}>Continuar na Cube AI <span aria-hidden="true">↗</span></button><span className="card-dica">Selecione outro ponto para explorar.</span></div>
-    </div>
-  </section>;
-}
-
-function MarVivo() {
-  const palcoRef = useRef(null);
-  const [visivel, setVisivel] = useState(false);
-  const [reduzirMovimento, setReduzirMovimento] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+function TextoDigitado() {
+  const [estado, setEstado] = useState({ indice: 0, letras: 0, fase: "escrevendo" });
+  const frase = FRASES_ABERTURA[estado.indice];
   useEffect(() => {
-    const preferencia = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const atualizar = () => setReduzirMovimento(preferencia.matches);
-    preferencia.addEventListener("change", atualizar);
-    const observador = new IntersectionObserver(([entrada]) => setVisivel(entrada.isIntersecting));
-    observador.observe(palcoRef.current);
-    return () => { preferencia.removeEventListener("change", atualizar); observador.disconnect(); };
-  }, []);
-  const animando = visivel && !reduzirMovimento;
-  return <div ref={palcoRef} className={"mar-vivo" + (animando ? " mar-animando" : "")}>
-    <svg className="mar-filtro" width="0" height="0" aria-hidden="true"><defs><filter id="ondas-mar" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.004 0.04" numOctaves="2" seed="3">{animando && <animate attributeName="baseFrequency" values="0.004 0.048;0.0052 0.04;0.004 0.032;0.0028 0.04;0.004 0.048" dur="12s" repeatCount="indefinite" />}</feTurbulence><feDisplacementMap in="SourceGraphic" scale={animando ? "14" : "0"} xChannelSelector="R" yChannelSelector="G" /></filter></defs></svg>
-    <div className="mar-palco"><img className="mar-imagem" src="/mar-vivo.jpg" alt="Ondas chegando à praia ao pôr do sol, sob um céu dourado." width="735" height="490" loading="lazy" /><div className="mar-ondas" aria-hidden="true" /><div className="mar-brilho" aria-hidden="true" /><div className="mar-ceu" aria-hidden="true" /></div>
+    const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const atraso = estado.fase === "esperando" ? 3000 : estado.fase === "apagando" ? 30 : estado.letras === 0 ? 350 : 55;
+    const timer = setTimeout(() => setEstado(atual => {
+      if (atual.fase === "esperando") return { ...atual, fase: "apagando" };
+      if (atual.fase === "apagando") {
+        if (reduzir || atual.letras <= 1) return { indice: (atual.indice + 1) % FRASES_ABERTURA.length, letras: 0, fase: "escrevendo" };
+        return { ...atual, letras: atual.letras - 1 };
+      }
+      const letras = reduzir ? frase.length : atual.letras + 1;
+      return { ...atual, letras, fase: letras >= frase.length ? "esperando" : "escrevendo" };
+    }), atraso);
+    return () => clearTimeout(timer);
+  }, [estado, frase]);
+  return <div className="texto-terminal">
+    <span className="sr-only">{FRASES_ABERTURA.join(" ")}</span>
+    <div className="terminal-linha" aria-hidden="true">{frase.slice(0, estado.letras)}<span className={"terminal-cursor" + (estado.fase === "esperando" ? " piscando" : "")}>_</span></div>
   </div>;
 }
 
+const DESCRICAO_PESSOAL = "Sou um desenvolvedor de software sou apaixonado por tecnologia, tenho 19 anos e já estou trabalhando na área.";
+
+function DescricaoDigitada() {
+  const descricaoRef = useRef(null);
+  const [iniciou, setIniciou] = useState(false);
+  const [letras, setLetras] = useState(0);
+  useEffect(() => {
+    const observador = new IntersectionObserver(([entrada]) => {
+      if (!entrada.isIntersecting) return;
+      setIniciou(true);
+      observador.disconnect();
+    }, { threshold: 0.35 });
+    observador.observe(descricaoRef.current);
+    return () => observador.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!iniciou || letras >= DESCRICAO_PESSOAL.length) return;
+    const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = setTimeout(() => setLetras(atual => reduzir ? DESCRICAO_PESSOAL.length : atual + 1), reduzir ? 0 : 45);
+    return () => clearTimeout(timer);
+  }, [iniciou, letras]);
+  return <p ref={descricaoRef} className="descricao-digitada"><span className="sr-only">{DESCRICAO_PESSOAL}</span><span className="descricao-reserva" aria-hidden="true">{DESCRICAO_PESSOAL}<span>_</span></span><span className="descricao-visivel" aria-hidden="true">{DESCRICAO_PESSOAL.slice(0, letras)}{iniciou && <span className={"terminal-cursor" + (letras === DESCRICAO_PESSOAL.length ? " piscando" : "")}>_</span>}</span></p>;
+}
+
 function App() {
+  const [glitchAtivo, setGlitchAtivo] = useState(null);
+  const glitchTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(glitchTimerRef.current), []);
+
+  function navegarComGlitch(evento) {
+    evento.preventDefault();
+    const destino = evento.currentTarget.getAttribute("href");
+    const reduzirMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.history.pushState(null, "", destino);
+    document.getElementById(destino.slice(1))?.scrollIntoView({ behavior: reduzirMovimento ? "instant" : "smooth", block: "start" });
+    clearTimeout(glitchTimerRef.current);
+    glitchTimerRef.current = null;
+    if (reduzirMovimento) {
+      setGlitchAtivo(null);
+      return;
+    }
+    setGlitchAtivo(destino);
+    glitchTimerRef.current = setTimeout(() => {
+      setGlitchAtivo(null);
+      glitchTimerRef.current = null;
+    }, 800);
+  }
+  const [topbarCompacta, setTopbarCompacta] = useState(() => window.scrollY > 24);
+  useEffect(() => {
+    const atualizarTopbar = () => setTopbarCompacta(window.scrollY > 24);
+    atualizarTopbar();
+    window.addEventListener("scroll", atualizarTopbar, { passive: true });
+    return () => window.removeEventListener("scroll", atualizarTopbar);
+  }, []);
   // Conversas desta sessão: cada uma tem seu próprio contexto na API.
   const [conversas, setConversas] = useState(() => [criarConversa()]);
   const [ativaId, setAtivaId] = useState(null);
@@ -192,8 +156,6 @@ function App() {
   const [carregando, setCarregando] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [sidebarRecolhida, setSidebarRecolhida] = useState(true);
-  const [rodada, setRodada] = useState(0);
-  const [resolvido, setResolvido] = useState(false);
   const fimRef = useRef(null);
   const entradaRef = useRef(null);
   const menuRef = useRef(null);
@@ -233,8 +195,6 @@ function App() {
     const vazia = conversas.find((item) => item.mensagens.length === 0);
     const nova = vazia || criarConversa();
     if (!vazia) setConversas((anteriores) => [nova, ...anteriores]);
-    setResolvido(false);
-    setRodada(valor => valor + 1);
     selecionarConversa(nova.id);
   }
 
@@ -248,8 +208,6 @@ function App() {
     atualizar((item) => ({ ...item, titulo: item.mensagens.length ? item.titulo : texto, mensagens: [...item.mensagens, { autor: "user", texto }] }));
     setPergunta("");
     setCarregando(true);
-    setResolvido(false);
-    setRodada(v => v + 1);
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await fetch(API_URL, {
@@ -261,7 +219,6 @@ function App() {
       if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
       const data = await response.json();
       if (typeof data.answer !== "string" || !data.answer.trim()) throw new Error("Resposta vazia do servidor");
-      setResolvido(true);
       atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", texto: data.answer }] }));
     } catch {
       atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: "Não consegui obter uma resposta agora. Tente enviar sua pergunta novamente em alguns instantes." }] }));
@@ -275,14 +232,13 @@ function App() {
   }
 
   return (
-    <div className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
-      <header className="portfolio-header" id="inicio">
-        <a className="portfolio-marca" href="#inicio"><span className="ponto" />Isaac</a>
-        <div className="header-acoes"><nav aria-label="Navegação principal"><a href="#inicio">Início</a><a href="#projetos">Projetos</a><a href="#sobre">Sobre</a><a href="#cube-ai">Vamos conversar <span aria-hidden="true">↗</span></a></nav></div>
+    <div id="inicio" className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
+      <header className={"portfolio-header" + (topbarCompacta ? " topbar-compacta" : "")}>
+        <div className="header-acoes"><nav aria-label="Navegação principal"><a href="#inicio" onClick={navegarComGlitch}><span className={glitchAtivo === "#inicio" ? "glitch-palavra" : undefined}>Início</span></a><a href="#projetos" onClick={navegarComGlitch}><span className={glitchAtivo === "#projetos" ? "glitch-palavra" : undefined}>Meu projeto</span></a><a href="#cube-ai" onClick={navegarComGlitch}><span className={glitchAtivo === "#cube-ai" ? "glitch-palavra" : undefined}>Vamos conversar</span> <span aria-hidden="true">↗</span></a></nav></div>
       </header>
       <button className="fundo-sidebar" aria-label="Fechar conversas" tabIndex={-1} onClick={fecharMenu} />
       <aside className="sidebar" id="historico" aria-label="Conversas">
-        <div className="sidebar-logo"><Marca /><strong>Cube AI</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
+        <div className="sidebar-logo"><strong>Cube AI</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
         <div className="conteudo-sidebar" id="conteudo-sidebar">
         <button className="nova-conversa" onClick={novaConversa} disabled={carregando}><Icon nome="plus" />Nova conversa</button>
         <p className="sidebar-legenda">CONVERSAS</p>
@@ -294,21 +250,18 @@ function App() {
         </div>
       </aside>
       <main>
-        <CerebroInterativo carregando={carregando} onPerguntar={texto => { setPergunta(texto); document.getElementById("cube-ai")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }); entradaRef.current?.focus({ preventScroll: true }); }} />
-        <section className="sobre-mar" id="sobre" aria-labelledby="sobre-titulo">
-          <div className="sobre-mar-intro"><p className="rotulo">UM POUCO SOBRE MIM</p><h2 id="sobre-titulo">Isaac.<br /><span className="sobre-traco" aria-hidden="true" />Ideias em <em>movimento.</em></h2><a href="#sobre-conteudo" className="sobre-seta" aria-label="Ler minha apresentação">↓</a></div>
-          <div className="sobre-mar-conteudo" id="sobre-conteudo"><div className="mar-com-faixa"><MarVivo /><div className="faixa-cube"><div className="faixa-cube-marca"><Marca /><strong>Cube AI</strong></div><p>Seu próximo passo para me conhecer. Pergunte sobre meus projetos, habilidades e trajetória.</p><a href="#cube-ai">Começar uma conversa <span aria-hidden="true">↗</span></a></div></div><div className="sobre-mar-texto"><h3>Um espaço para minhas ideias, meus projetos e as conversas que conectam tudo isso.</h3><p>Sou o Isaac. Neste portfólio, compartilho projetos e exploro novas formas de apresentar o que faço por meio da tecnologia.</p><p>A Cube AI faz parte dessa experiência: uma maneira de conhecer minha trajetória e minhas habilidades a partir da sua curiosidade.</p><a className="link-editorial" href="#cube-ai">Vamos conversar <span aria-hidden="true">↗</span></a><span className="sobre-assinatura">Isaac</span></div></div>
-        </section>
+        <section className="abertura-player" aria-label="Animação de abertura"><div className="abertura-conteudo"><img src="/player-one.gif" alt="Silhueta animada formada por pontos coloridos." width="480" height="480" fetchPriority="high" /><TextoDigitado /></div></section>
+        <section className="espaco-apresentacao" aria-label="Apresentação pessoal"><div className="retangulo-apresentacao"><DescricaoDigitada /></div><img className="gif-apresentacao" src="/digital-art-glitch.gif" alt="Retrato em preto e branco com efeitos digitais coloridos animados." width="480" height="270" loading="lazy" /></section>
         <section className="projeto-destaque" id="projetos" aria-labelledby="projeto-titulo">
           <div className="projeto-resumo"><div><h2 id="projeto-titulo"><span className="ponto" />Cube AI</h2><p className="rotulo">PORTFÓLIO INTERATIVO · INTELIGÊNCIA ARTIFICIAL</p></div><div><p>Um portfólio que também conversa. Conheça meus projetos, habilidades e trajetória fazendo perguntas do seu jeito.</p><a className="link-editorial" href="#cube-ai">Conheça a Cube AI <span aria-hidden="true">↗</span></a></div></div>
-          <a className="projeto-visual" href="#cube-ai" aria-label="Experimentar a Cube AI"><span className="visual-legenda">CONHECER COMEÇA COM UMA PERGUNTA.</span><div className="visual-cubo"><Marca /><span>Cube AI<span className="visual-subtitulo">Conectando ideias. Uma conversa por vez.</span></span></div><span className="visual-rodape">Uma experiência feita para explorar.<span className="visual-seta" aria-hidden="true">↗</span></span></a>
+          <a className="projeto-visual" href="#cube-ai" aria-label="Experimentar a Cube AI"><span className="visual-legenda">CONHECER COMEÇA COM UMA PERGUNTA.</span><div className="visual-cubo"><span>Cube AI<span className="visual-subtitulo">Conectando ideias. Uma conversa por vez.</span></span></div><span className="visual-rodape">Uma experiência feita para explorar.<span className="visual-seta" aria-hidden="true">↗</span></span></a>
         </section>
         <section className="secao-ia" id="cube-ai" aria-label="Converse com a Cube AI">
-          <div className="ia-cabecalho"><span className="ia-identidade"><Marca />Cube AI</span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 760px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
+          <div className="ia-cabecalho"><span className="ia-identidade">Cube AI</span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 760px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
           <div className="chat-painel">
             {!iniciou && <div className="convite-conversa"><p className="rotulo">AGORA É COM VOCÊ</p><h2>O que você quer descobrir<br />sobre o Isaac?</h2><p>Toda conversa começa com uma curiosidade.</p></div>}
-            {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Cube AI"}>{mensagem.autor === "ai" ? <><div className="autor"><Marca pequena /><span>Cube AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Conectando as peças da sua resposta...</span></div>}<div ref={fimRef} /></div>}
-            <form className="compositor" onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><CuboQuadrado carregando={carregando} resolvido={resolvido} rodada={rodada} /><label className="sr-only" htmlFor="pergunta">Sua pergunta sobre o Isaac</label><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
+            {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Cube AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Cube AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Conectando as peças da sua resposta...</span></div>}<div ref={fimRef} /></div>}
+            <form className="compositor" onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><label className="sr-only" htmlFor="pergunta">Sua pergunta sobre o Isaac</label><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
             <div className="perguntas-basicas" aria-label="Perguntas básicas">{sugestoes.map(item => <button key={item.titulo} disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span>{item.titulo}</span><Icon nome={item.icone} /></button>)}</div>
           </div>
         </section>

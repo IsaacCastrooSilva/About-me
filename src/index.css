@@ -1,20 +1,20 @@
-:root { font-family: Helvetica, "Helvetica Neue", Arial, sans-serif; color: var(--texto); background: var(--fundo); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; color-scheme: light; }
+:root { font-family: Helvetica, "Helvetica Neue", Arial, sans-serif; color: var(--texto); background: var(--fundo); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; color-scheme: dark; }
 * { box-sizing: border-box; }
 :root {
-  --fundo: #ffffff;
-  --texto: #171717;
-  --texto-suave: #696969;
-  --superficie: #f0eee7;
-  --superficie-suave: #f5f4f0;
-  --superficie-hover: #e4e0d6;
-  --controle: #ded9cf;
-  --controle-hover: #d5d0c6;
-  --borda: #e5e5e5;
-  --borda-forte: #bdbdbd;
+  --fundo: #000000;
+  --texto: #f2f2f2;
+  --texto-suave: #b0b0b0;
+  --superficie: #111111;
+  --superficie-suave: #0c0c0c;
+  --superficie-hover: #1c1c1c;
+  --controle: #2a2a2a;
+  --controle-hover: #363636;
+  --borda: #282828;
+  --borda-forte: #666666;
   --forma-coral: #eb653b;
   --forma-azul: #4e7eeb;
   --forma-verde: #80d451;
-  --destaque: #b74423;
+  --destaque: #ff936f;
 }
 /* Cores transitam juntas; a preferência por menos movimento é respeitada abaixo. */
 html, body, .portfolio, .portfolio *, .portfolio *::before, .portfolio *::after {
@@ -22,7 +22,7 @@ html, body, .portfolio, .portfolio *, .portfolio *::before, .portfolio *::after 
   transition-duration: 450ms;
   transition-timing-function: ease;
 }
-html { scroll-behavior: smooth; scroll-padding-top: 25px; }
+html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 body { margin: 0; }
 button, textarea { font: inherit; color: inherit; }
 a { color: inherit; text-decoration: none; }
