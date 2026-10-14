@@ -1,34 +1,37 @@
-# Isaac · Portfólio IA
+﻿# Isaac · Portfólio
 
-Frontend em React e Vite para conhecer o Isaac por meio de uma conversa. Visual em modo escuro com destaque em verde-sálvia, com sugestões de perguntas e layout responsivo.
+Frontend em React e Vite, com visual escuro, destaque em `#FF936F` e a Cube AI para responder perguntas sobre Isaac.
 
 ## Rodar localmente
-
-Na pasta `portfolio-ai-frontend`, execute:
 
 ```sh
 npm install
 npm run dev
 ```
 
-O backend Spring Boot precisa estar rodando em `http://localhost:8080`, com CORS permitindo a origem do frontend. O backend não faz parte deste workspace.
+O chat usa o backend Spring Boot em `http://localhost:8080/api/chat`. Para outra URL, copie `.env.example` para `.env.local` e ajuste `VITE_CHAT_API_URL`. Variáveis `VITE_` são públicas.
 
-Para usar outra URL, copie `.env.example` para `.env.local`, ajuste `VITE_CHAT_API_URL` e reinicie o Vite. Variáveis `VITE_` são públicas: não coloque chaves de API nelas.
+Contrato: `POST /api/chat`, com `{ "message": "pergunta", "conversationId": "uuid" }`, retornando `{ "answer": "resposta em Markdown" }`. Os chips enviam suas perguntas diretamente. Enter envia e Shift+Enter cria uma linha. As conversas ficam na memória da aba, com UUID próprio, e o envio mantém o timeout de 60 segundos.
 
-Contrato preservado: `POST /api/chat`, recebendo `{ "message": "pergunta", "conversationId": "uuid" }` e retornando `{ "answer": "resposta em Markdown" }`.
+## Estrutura e estilos
 
-## Personalizar
+- `src/index.css`: tokens de cores, tipografia, espaçamentos, raios, sombras e movimento.
+- `src/components/Navigation.*`: menu fixo com blur, indicação de seção ativa e menu mobile.
+- `src/components/Hero.*`: apresentação, CTAs e GIF.
+- `src/components/Sobre.jsx`: apresentação pessoal e tecnologias.
+- `src/components/CubePreview.jsx`: exemplo demonstrativo; não faz requisições nem entra no histórico real.
+- `src/components/Icon.jsx`: ícones da biblioteca Lucide.
+- `src/hooks/`: preferência de movimento e entradas com IntersectionObserver.
+- `src/App.jsx`: integração das seções e fluxo original do chat.
+- `src/App.css`: layouts das seções, chat e histórico.
 
-- `src/index.css`: cores principais nas variáveis de `:root`, especialmente `--destaque`, `--fundo` e `--lateral`.
-- `src/App.css`: espaçamentos, tipografia, mensagens e regras de responsividade.
-- `src/App.jsx`: textos de apresentação e perguntas no array `sugestoes`.
-- `index.html` e `public/favicon.svg`: título, descrição e ícone da aba.
+Inter e JetBrains Mono são servidas localmente pelo bundle, sem chamadas a serviços de fontes. Os layouts usam uma coluna em telas de 375px e duas nas seções principais em 768px e 1280px. O menu vira hambúrguer abaixo de 768px.
 
-## Conversas
+## Movimento e mídia
 
-Enter envia; Shift+Enter insere uma nova linha. As sugestões enviam a pergunta diretamente ao backend. Durante uma resposta, o envio e a troca de conversa ficam bloqueados para manter o contexto correto.
+O GIF do hero tem dimensões declaradas, prioridade alta e decodificação assíncrona. O CSS reduz as cores RGB a tons de cinza. Com `prefers-reduced-motion`, um poster PNG substitui o GIF e a digitação e as entradas ficam estáticas.
 
-Cada conversa tem um UUID próprio. O histórico existe somente na memória da aba e é reiniciado ao recarregar a página; isso também inicia um contexto novo na API. Não há respostas fictícias no frontend. Em caso de falha ou espera superior a 60 segundos, a pergunta volta ao campo para permitir outra tentativa.
+Melhoria recomendada: converter `player-one.gif` para WebM e MP4, mantendo o poster como fallback. Comparar os arquivos convertidos antes de substituir; não foi adicionado um conversor pesado ao projeto.
 
 ## Verificar
 

@@ -1,0 +1,26 @@
+.hero { position: relative; display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: var(--space-7); min-height: min(800px, calc(100svh - 80px)); padding: 84px 0 116px; }
+.hero h1 { font-size: var(--text-h1); line-height: 1.07; letter-spacing: -.055em; font-weight: 600; margin: 24px 0; }
+.hero h1 > span { display: block; margin-top: 12px; font-weight: 400; font-size: .7em; letter-spacing: -.045em; line-height: 1.2; color: var(--texto-suave); }
+.hero-valor { max-width: 38ch; font-size: var(--text-lg); line-height: 1.7; margin: 0 0 var(--space-4); }
+.hero-contexto { max-width: 48ch; font-size: var(--text-sm); line-height: 1.8; color: var(--texto-suave); margin: 0; }
+.hero-acoes { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-5); margin-top: var(--space-6); }
+.hero-arte { min-width: 0; position: relative; display: flex; flex-direction: column; align-items: center; background: radial-gradient(ellipse, var(--accent-soft), transparent 65%); }
+.hero-arte img { width: min(400px, 100%); height: auto; display: block; filter: grayscale(1) contrast(1.1); opacity: .82; mix-blend-mode: screen; }
+.arte-legenda { align-self: stretch; font: 9px var(--font-mono); color: var(--texto-suave); letter-spacing: .12em; text-align: center; margin-bottom: 12px; }
+.hero-arte .texto-terminal { color: var(--texto-suave); font: 11px/1.8 var(--font-mono); text-align: center; width: 100%; margin-top: 4px; }
+.terminal-linha { min-height: 3.6em; text-wrap: balance; }
+.terminal-cursor { display: inline-block; }
+.terminal-cursor.piscando { animation: piscar-cursor 1s step-end infinite; }
+@keyframes piscar-cursor { 50% { opacity: 0; } }
+.indicador-scroll { position: absolute; bottom: 32px; left: 0; display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font: 9px var(--font-mono); letter-spacing: .1em; color: var(--texto-suave); }
+.indicador-scroll > span { display: grid; place-items: center; width: 26px; height: 36px; border: 1px solid var(--borda); border-radius: var(--radius-pill); font-size: 16px; }
+.indicador-scroll:hover { color: var(--destaque); }
+@media (max-width: 767px) {
+  .hero { grid-template-columns: 1fr; gap: 44px; padding: 52px 0 92px; min-height: auto; }
+  .hero h1 { margin-block: 20px; }
+  .hero-arte { max-width: 380px; width: 100%; margin: auto; }
+  .hero-arte img { width: min(280px, 100%); }
+  .hero-arte .texto-terminal { font-size: 9px; }
+  .indicador-scroll { bottom: 20px; }
+}
+@media (min-width: 768px) and (max-width: 1023px) { .hero { gap: 24px; } .hero-acoes { gap: 12px; } }

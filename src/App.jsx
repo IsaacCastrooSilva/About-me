@@ -1,29 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import Navigation from "./components/Navigation";
+import Hero from "./components/Hero";
+import Sobre from "./components/Sobre";
+import CubePreview from "./components/CubePreview";
+import Icon from "./components/Icon";
+import useReveal from "./hooks/useReveal";
+import useReducedMotion from "./hooks/useReducedMotion";
 import "./App.css";
 
 const API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8080/api/chat";
-
-function Icon({ nome, ...props }) {
-  const caminhos = {
-    brain: <><path d="M12 5a3 3 0 0 0-5.8-1A3.8 3.8 0 0 0 3 9.8a4 4 0 0 0 .8 7.1A3.5 3.5 0 0 0 10.5 20L12 19V5Zm0 0a3 3 0 0 1 5.8-1A3.8 3.8 0 0 1 21 9.8a4 4 0 0 1-.8 7.1 3.5 3.5 0 0 1-6.7 3.1L12 19" /><path d="M6.2 4A3 3 0 0 0 7 8m-4 2a3 3 0 0 1 4 3m-3.2 3.9A3 3 0 0 0 7 16m10.8-12A3 3 0 0 1 17 8m4 2a3 3 0 0 0-4 3m3.2 3.9A3 3 0 0 1 17 16" /></>,
-    verified: <><circle cx="12" cy="12" r="9" /><path d="m8 12 2.7 2.7L16 9.5" /></>,
-    project: <><path d="M12 4v12M6 10h12M6 21h12" /></>,
-    fileplus: <><path d="M7 16H5V3h9l5 5v8h-2M14 3v5h5M5 20h6m-3-3v6m5-3h6m-3-3v6" /></>,
-    plus: <path d="M12 5v14M5 12h14" />,
-    arrow: <path d="M12 19V5m-6 6 6-6 6 6" />,
-    panel: <><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /></>,
-    chat: <path d="M20 11.5a8 8 0 0 1-8 8H4l1.3-4A8 8 0 1 1 20 11.5Z" />,
-    person: <><circle cx="12" cy="8" r="3" /><path d="M5 20v-2a7 7 0 0 1 14 0v2" /></>,
-    code: <path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16" />,
-    layers: <><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" /></>,
-    mail: <><rect x="3" y="5" width="18" height="14" rx="3" /><path d="m3 7 9 6 9-6" /></>,
-    chevron: <path d="m9 5 7 7-7 7" />,
-    close: <path d="m6 6 12 12M6 18 18 6" />,
-  };
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{caminhos[nome]}</svg>;
-}
 
 const sugestoes = [
   { icone: "brain", titulo: "Sobre mim", pergunta: "Quem é o Isaac?" },
@@ -73,9 +60,11 @@ const FRASES_ABERTURA = [
   "Explore essa página!",
 ];
 function TextoDigitado() {
+  const reduzirMovimento = useReducedMotion();
   const [estado, setEstado] = useState({ indice: 0, letras: 0, fase: "escrevendo" });
   const frase = FRASES_ABERTURA[estado.indice];
   useEffect(() => {
+    if (reduzirMovimento) return;
     const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const atraso = estado.fase === "esperando" ? 3000 : estado.fase === "apagando" ? 30 : estado.letras === 0 ? 350 : 55;
     const timer = setTimeout(() => setEstado(atual => {
@@ -88,16 +77,17 @@ function TextoDigitado() {
       return { ...atual, letras, fase: letras >= frase.length ? "esperando" : "escrevendo" };
     }), atraso);
     return () => clearTimeout(timer);
-  }, [estado, frase]);
+  }, [estado, frase, reduzirMovimento]);
   return <div className="texto-terminal">
     <span className="sr-only">{FRASES_ABERTURA.join(" ")}</span>
-    <div className="terminal-linha" aria-hidden="true">{frase.slice(0, estado.letras)}<span className={"terminal-cursor" + (estado.fase === "esperando" ? " piscando" : "")}>_</span></div>
+    <div className="terminal-linha" aria-hidden="true">{reduzirMovimento ? FRASES_ABERTURA[0] : frase.slice(0, estado.letras)}<span className={"terminal-cursor" + (estado.fase === "esperando" ? " piscando" : "")}>_</span></div>
   </div>;
 }
 
-const DESCRICAO_PESSOAL = "Sou um desenvolvedor de software sou apaixonado por tecnologia, tenho 19 anos e já estou trabalhando na área.";
+const DESCRICAO_PESSOAL = "Sou desenvolvedor de software e apaixonado por tecnologia. Tenho 19 anos e já trabalho na área.";
 
 function DescricaoDigitada() {
+  const reduzirMovimento = useReducedMotion();
   const descricaoRef = useRef(null);
   const [iniciou, setIniciou] = useState(false);
   const [letras, setLetras] = useState(0);
@@ -111,44 +101,16 @@ function DescricaoDigitada() {
     return () => observador.disconnect();
   }, []);
   useEffect(() => {
-    if (!iniciou || letras >= DESCRICAO_PESSOAL.length) return;
+    if (!iniciou || reduzirMovimento || letras >= DESCRICAO_PESSOAL.length) return;
     const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = setTimeout(() => setLetras(atual => reduzir ? DESCRICAO_PESSOAL.length : atual + 1), reduzir ? 0 : 45);
     return () => clearTimeout(timer);
-  }, [iniciou, letras]);
-  return <p ref={descricaoRef} className="descricao-digitada"><span className="sr-only">{DESCRICAO_PESSOAL}</span><span className="descricao-reserva" aria-hidden="true">{DESCRICAO_PESSOAL}<span>_</span></span><span className="descricao-visivel" aria-hidden="true">{DESCRICAO_PESSOAL.slice(0, letras)}{iniciou && <span className={"terminal-cursor" + (letras === DESCRICAO_PESSOAL.length ? " piscando" : "")}>_</span>}</span></p>;
+  }, [iniciou, letras, reduzirMovimento]);
+  return <p ref={descricaoRef} className="descricao-digitada"><span className="sr-only">{DESCRICAO_PESSOAL}</span><span className="descricao-reserva" aria-hidden="true">{DESCRICAO_PESSOAL}<span>_</span></span><span className="descricao-visivel" aria-hidden="true">{reduzirMovimento ? DESCRICAO_PESSOAL : DESCRICAO_PESSOAL.slice(0, letras)}{iniciou && <span className={"terminal-cursor" + (letras === DESCRICAO_PESSOAL.length ? " piscando" : "")}>_</span>}</span></p>;
 }
 
 function App() {
-  const [glitchAtivo, setGlitchAtivo] = useState(null);
-  const glitchTimerRef = useRef(null);
-  useEffect(() => () => clearTimeout(glitchTimerRef.current), []);
-
-  function navegarComGlitch(evento) {
-    evento.preventDefault();
-    const destino = evento.currentTarget.getAttribute("href");
-    const reduzirMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.history.pushState(null, "", destino);
-    document.getElementById(destino.slice(1))?.scrollIntoView({ behavior: reduzirMovimento ? "instant" : "smooth", block: "start" });
-    clearTimeout(glitchTimerRef.current);
-    glitchTimerRef.current = null;
-    if (reduzirMovimento) {
-      setGlitchAtivo(null);
-      return;
-    }
-    setGlitchAtivo(destino);
-    glitchTimerRef.current = setTimeout(() => {
-      setGlitchAtivo(null);
-      glitchTimerRef.current = null;
-    }, 800);
-  }
-  const [topbarCompacta, setTopbarCompacta] = useState(() => window.scrollY > 24);
-  useEffect(() => {
-    const atualizarTopbar = () => setTopbarCompacta(window.scrollY > 24);
-    atualizarTopbar();
-    window.addEventListener("scroll", atualizarTopbar, { passive: true });
-    return () => window.removeEventListener("scroll", atualizarTopbar);
-  }, []);
+  useReveal();
   // Conversas desta sessão: cada uma tem seu próprio contexto na API.
   const [conversas, setConversas] = useState(() => [criarConversa()]);
   const [ativaId, setAtivaId] = useState(null);
@@ -232,10 +194,9 @@ function App() {
   }
 
   return (
-    <div id="inicio" className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
-      <header className={"portfolio-header" + (topbarCompacta ? " topbar-compacta" : "")}>
-        <div className="header-acoes"><nav aria-label="Navegação principal"><a href="#inicio" onClick={navegarComGlitch}><span className={glitchAtivo === "#inicio" ? "glitch-palavra" : undefined}>Início</span></a><a href="#projetos" onClick={navegarComGlitch}><span className={glitchAtivo === "#projetos" ? "glitch-palavra" : undefined}>Meu projeto</span></a><a href="#cube-ai" onClick={navegarComGlitch}><span className={glitchAtivo === "#cube-ai" ? "glitch-palavra" : undefined}>Vamos conversar</span> <span aria-hidden="true">↗</span></a></nav></div>
-      </header>
+    <div className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
+      <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
+      <Navigation />
       <button className="fundo-sidebar" aria-label="Fechar conversas" tabIndex={-1} onClick={fecharMenu} />
       <aside className="sidebar" id="historico" aria-label="Conversas">
         <div className="sidebar-logo"><strong>Cube AI</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
@@ -249,19 +210,18 @@ function App() {
         <span className="sidebar-rodape">Um pouco mais sobre Isaac.</span>
         </div>
       </aside>
-      <main>
-        <section className="abertura-player" aria-label="Animação de abertura"><div className="abertura-conteudo"><img src="/player-one.gif" alt="Silhueta animada formada por pontos coloridos." width="480" height="480" fetchPriority="high" /><TextoDigitado /></div></section>
-        <section className="espaco-apresentacao" aria-label="Apresentação pessoal"><div className="retangulo-apresentacao"><DescricaoDigitada /></div><img className="gif-apresentacao" src="/digital-art-glitch.gif" alt="Retrato em preto e branco com efeitos digitais coloridos animados." width="480" height="270" loading="lazy" /></section>
-        <section className="projeto-destaque" id="projetos" aria-labelledby="projeto-titulo">
-          <div className="projeto-resumo"><div><h2 id="projeto-titulo"><span className="ponto" />Cube AI</h2><p className="rotulo">PORTFÓLIO INTERATIVO · INTELIGÊNCIA ARTIFICIAL</p></div><div><p>Um portfólio que também conversa. Conheça meus projetos, habilidades e trajetória fazendo perguntas do seu jeito.</p><a className="link-editorial" href="#cube-ai">Conheça a Cube AI <span aria-hidden="true">↗</span></a></div></div>
-          <a className="projeto-visual" href="#cube-ai" aria-label="Experimentar a Cube AI"><span className="visual-legenda">CONHECER COMEÇA COM UMA PERGUNTA.</span><div className="visual-cubo"><span>Cube AI<span className="visual-subtitulo">Conectando ideias. Uma conversa por vez.</span></span></div><span className="visual-rodape">Uma experiência feita para explorar.<span className="visual-seta" aria-hidden="true">↗</span></span></a>
-        </section>
-        <section className="secao-ia" id="cube-ai" aria-label="Converse com a Cube AI">
-          <div className="ia-cabecalho"><span className="ia-identidade">Cube AI</span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 760px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
+      <main id="conteudo">
+        <Hero><TextoDigitado /></Hero>
+        <Sobre><DescricaoDigitada /></Sobre>
+        <CubePreview />
+        <section className="secao-ia secao" id="cube-ai" aria-labelledby="chat-titulo" data-reveal>
+          <div className="ia-cabecalho"><span className="eyebrow">03 / VAMOS CONVERSAR</span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 767px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
           <div className="chat-painel">
-            {!iniciou && <div className="convite-conversa"><p className="rotulo">AGORA É COM VOCÊ</p><h2>O que você quer descobrir<br />sobre o Isaac?</h2><p>Toda conversa começa com uma curiosidade.</p></div>}
+            <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><span className="chat-identidade">CUBE AI</span><h2 id="chat-titulo">O que você quer descobrir<br />sobre o Isaac?</h2>{!iniciou && <p>Projetos, habilidades ou uma curiosidade.<br />Pode perguntar do seu jeito.</p>}</div>
             {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Cube AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Cube AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Conectando as peças da sua resposta...</span></div>}<div ref={fimRef} /></div>}
-            <form className="compositor" onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><label className="sr-only" htmlFor="pergunta">Sua pergunta sobre o Isaac</label><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
+            <label className="campo-label" htmlFor="pergunta">Sua pergunta para a Cube AI</label>
+            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} aria-describedby="ajuda-pergunta" value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
+            <p id="ajuda-pergunta" className="campo-ajuda">Enter para enviar <span aria-hidden="true">·</span> Shift + Enter para uma nova linha</p>
             <div className="perguntas-basicas" aria-label="Perguntas básicas">{sugestoes.map(item => <button key={item.titulo} disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span>{item.titulo}</span><Icon nome={item.icone} /></button>)}</div>
           </div>
         </section>
