@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Navigation from "./components/Navigation";
 import Hero from "./components/Hero";
+import ContentGrid from "./components/ContentGrid";
 import Sobre from "./components/Sobre";
 import CubePreview from "./components/CubePreview";
 import Icon from "./components/Icon";
@@ -212,6 +213,7 @@ function App() {
       </aside>
       <main id="conteudo">
         <Hero><TextoDigitado /></Hero>
+        <ContentGrid />
         <Sobre><DescricaoDigitada /></Sobre>
         <CubePreview />
         <section className="secao-ia secao" id="cube-ai" aria-labelledby="chat-titulo" data-reveal>

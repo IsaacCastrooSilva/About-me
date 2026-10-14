@@ -1,0 +1,16 @@
+.grade-conteudos { display: grid; gap: var(--space-9); padding: var(--space-7) 0 var(--space-9); }
+.bloco-conteudo { min-width: 0; background: var(--superficie); border: 1px solid var(--borda); }
+.bloco-quadrado { aspect-ratio: 1; }
+.grade-destaques { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); align-items: start; gap: var(--space-5); }
+.bloco-principal { aspect-ratio: 16 / 9; }
+.grade-lateral { display: grid; gap: var(--space-5); }
+.grade-recentes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); row-gap: var(--space-4); }
+.bloco-miniatura { width: min(140px, 100%); aspect-ratio: 1; }
+.grade-fileira { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+@media (max-width: 767px) {
+  .grade-conteudos { gap: var(--space-8); padding-top: var(--space-5); padding-bottom: var(--space-8); }
+  .grade-destaques { grid-template-columns: 1fr; gap: var(--space-4); }
+  .grade-lateral { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+  .grade-fileira { gap: var(--space-3); }
+  .bloco-miniatura { width: min(100px, 100%); }
+}

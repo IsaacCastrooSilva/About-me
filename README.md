@@ -1,6 +1,6 @@
-﻿# Isaac · Portfólio
+# Isaac · Portfólio
 
-Frontend em React e Vite, com visual escuro, destaque em `#FF936F` e a Cube AI para responder perguntas sobre Isaac.
+Frontend em React e Vite, com visual escuro, destaques em branco e a Cube AI para responder perguntas sobre Isaac.
 
 ## Rodar localmente
 
