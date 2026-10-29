@@ -4,10 +4,9 @@ import remarkGfm from "remark-gfm";
 import Navigation from "./components/Navigation";
 import Hero from "./components/Hero";
 import Sobre from "./components/Sobre";
-import CubePreview from "./components/CubePreview";
+import TheodorPreview from "./components/TheodorPreview";
 import Icon from "./components/Icon";
 import useReveal from "./hooks/useReveal";
-import useReducedMotion from "./hooks/useReducedMotion";
 import "./App.css";
 
 const API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8080/api/chat";
@@ -42,61 +41,6 @@ function SugestaoAnimada() {
 
 function criarConversa() {
   return { id: crypto.randomUUID(), titulo: "Nova conversa", mensagens: [] };
-}
-
-const FRASES_ABERTURA = [
-  "Olá, usuário!",
-  "Esse é o meu portifólio virtual, para facilitar suas curiosidades sobre mim, bem legal né?",
-  "Dê um olhada nela!",
-];
-function TextoDigitado() {
-  const reduzirMovimento = useReducedMotion();
-  const [estado, setEstado] = useState({ indice: 0, letras: 0, fase: "escrevendo" });
-  const frase = FRASES_ABERTURA[estado.indice];
-  useEffect(() => {
-    if (reduzirMovimento) return;
-    const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const atraso = estado.fase === "esperando" ? 3000 : estado.fase === "apagando" ? 30 : estado.letras === 0 ? 350 : 55;
-    const timer = setTimeout(() => setEstado(atual => {
-      if (atual.fase === "esperando") return { ...atual, fase: "apagando" };
-      if (atual.fase === "apagando") {
-        if (reduzir || atual.letras <= 1) return { indice: (atual.indice + 1) % FRASES_ABERTURA.length, letras: 0, fase: "escrevendo" };
-        return { ...atual, letras: atual.letras - 1 };
-      }
-      const letras = reduzir ? frase.length : atual.letras + 1;
-      return { ...atual, letras, fase: letras >= frase.length ? "esperando" : "escrevendo" };
-    }), atraso);
-    return () => clearTimeout(timer);
-  }, [estado, frase, reduzirMovimento]);
-  return <div className="texto-terminal">
-    <span className="sr-only">{FRASES_ABERTURA.join(" ")}</span>
-    <div className="terminal-linha" aria-hidden="true">{reduzirMovimento ? FRASES_ABERTURA[0] : frase.slice(0, estado.letras)}<span className={"terminal-cursor" + (estado.fase === "esperando" ? " piscando" : "")}>_</span></div>
-  </div>;
-}
-
-const DESCRICAO_PESSOAL = "";
-
-function DescricaoDigitada() {
-  const reduzirMovimento = useReducedMotion();
-  const descricaoRef = useRef(null);
-  const [iniciou, setIniciou] = useState(false);
-  const [letras, setLetras] = useState(0);
-  useEffect(() => {
-    const observador = new IntersectionObserver(([entrada]) => {
-      if (!entrada.isIntersecting) return;
-      setIniciou(true);
-      observador.disconnect();
-    }, { threshold: 0.35 });
-    observador.observe(descricaoRef.current);
-    return () => observador.disconnect();
-  }, []);
-  useEffect(() => {
-    if (!iniciou || reduzirMovimento || letras >= DESCRICAO_PESSOAL.length) return;
-    const reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = setTimeout(() => setLetras(atual => reduzir ? DESCRICAO_PESSOAL.length : atual + 1), reduzir ? 0 : 45);
-    return () => clearTimeout(timer);
-  }, [iniciou, letras, reduzirMovimento]);
-  return <p ref={descricaoRef} className="descricao-digitada"><span className="sr-only">{DESCRICAO_PESSOAL}</span><span className="descricao-reserva" aria-hidden="true">{DESCRICAO_PESSOAL}<span>_</span></span><span className="descricao-visivel" aria-hidden="true">{reduzirMovimento ? DESCRICAO_PESSOAL : DESCRICAO_PESSOAL.slice(0, letras)}{iniciou && <span className={"terminal-cursor" + (letras === DESCRICAO_PESSOAL.length ? " piscando" : "")}>_</span>}</span></p>;
 }
 
 function App() {
@@ -183,6 +127,16 @@ function App() {
     }
   }
 
+  function abrirChat(texto) {
+    if (requisicaoRef.current) return;
+    if (texto) setPergunta(texto);
+    document.getElementById("theodor-ai")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      block: "start",
+    });
+    entradaRef.current?.focus({ preventScroll: true });
+  }
+
   return (
     <div className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -201,15 +155,15 @@ function App() {
         </div>
       </aside>
       <main id="conteudo">
-        <Hero><TextoDigitado /></Hero>
-        <Sobre><DescricaoDigitada /></Sobre>
-        <CubePreview />
-        <section className="secao-ia secao" id="cube-ai" aria-labelledby="chat-titulo" data-reveal>
+        <Hero />
+        <Sobre />
+        <TheodorPreview onIniciarConversa={abrirChat} ocupado={carregando} />
+        <section className="secao-ia secao" id="theodor-ai" aria-labelledby="chat-titulo" data-reveal>
           <div className="ia-cabecalho"><span className="eyebrow"></span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 767px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
           <div className="chat-painel">
             <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><span className="chat-identidade"></span><h2 id="chat-titulo">O que você quer descobrir<br />sobre mim?</h2>{!iniciou && <p>Projetos, habilidades ou uma curiosidade<br />O que você quiser.</p>}</div>
             {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Theodor AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Pensando...</span></div>}<div ref={fimRef} /></div>}
-            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} aria-describedby="ajuda-pergunta" value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
+            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} aria-label="Sua pergunta para o Theodor AI" aria-describedby="ajuda-pergunta" value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
             <p id="ajuda-pergunta" className="campo-ajuda"> Shift + Enter para uma nova linha</p>
             <div className="perguntas-basicas" aria-label="Perguntas básicas">{sugestoes.map(item => <button key={item.titulo} disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span>{item.titulo}</span><Icon nome={item.icone} /></button>)}</div>
           </div>

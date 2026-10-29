@@ -1,6 +1,6 @@
 # About Me
 
-Portfólio com chat de inteligência artificial. O backend Java 21 com Spring
+Portfólio com o Theodor AI, um chat de inteligência artificial. O backend Java 21 com Spring
 Boot, Maven, JPA e H2 fica na raiz; o frontend React/Vite fica em `frontend/`.
 
 ## Executar o projeto completo

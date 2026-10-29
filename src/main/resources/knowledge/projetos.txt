@@ -1,37 +1,37 @@
 PROJETOS DE ISAAC DE CASTRO SILVA
 
 
-CUBE IA
+Theodor AI
 
-Cube IA é uma inteligência artificial desenvolvida por Isaac e integrada ao seu portfólio.
+Theodor AI é uma inteligência artificial desenvolvida por Isaac e integrada ao seu portfólio.
 
 O sistema permite que visitantes conversem com uma IA capaz de responder perguntas sobre Isaac, incluindo sua experiência profissional, projetos, tecnologias, formação e informações pessoais disponibilizadas por ele.
 
-A Cube AI utiliza recuperação semântica de conhecimento, memória de conversa e modelos de linguagem para produzir respostas contextualizadas.
+O Theodor AI utiliza recuperação semântica de conhecimento, memória de conversa e modelos de linguagem para produzir respostas contextualizadas.
 
-RAG, memória, embeddings, persistência, Gemini, Groq e a interface em React são componentes internos da arquitetura da Cube AI e não projetos separados.
+RAG, memória, embeddings, persistência, Gemini, Groq e a interface em React são componentes internos da arquitetura do Theodor AI e não projetos separados.
 
 
-COMPONENTES DO CUBE IA
+COMPONENTES DO Theodor AI
 
-Todos os itens descritos abaixo fazem parte do mesmo Cube IA.
+Todos os itens descritos abaixo fazem parte do mesmo Theodor AI.
 Eles não são projetos independentes.
 
 
-Backend do CUBE IA:
+Backend do Theodor AI:
 - Java.
 - Spring Boot.
 - API REST.
 
 
-Inteligência Artificial do CUBE IA:
+Inteligência Artificial do Theodor AI:
 - Integração com modelos de linguagem.
 - Gemini como provedor principal.
 - Groq como fallback caso o provedor principal esteja indisponível.
 
 
-RAG do CUBE IA:
-- O RAG é um componente interno do CUBE IA e não um projeto separado.
+RAG do Theodor AI:
+- O RAG é um componente interno do Theodor AI e não um projeto separado.
 - Base de conhecimento própria sobre Isaac.
 - Divisão da base em chunks.
 - Geração de embeddings.
@@ -42,8 +42,8 @@ RAG do CUBE IA:
 - Regras de grounding para reduzir respostas não sustentadas pela base de conhecimento.
 
 
-Memória conversacional do CUBE IA:
-- A memória conversacional é um componente interno do Portfolio AI e não um projeto separado.
+Memória conversacional do Theodor AI:
+- A memória conversacional é um componente interno do Theodor AI e não um projeto separado.
 - Identificação das conversas através de conversationId.
 - Persistência do histórico das conversas em banco de dados H2.
 - Armazenamento das mensagens do usuário e das respostas da IA.
@@ -55,7 +55,7 @@ Memória conversacional do CUBE IA:
 - Persistência da categoria ativa da conversa.
 
 
-Persistência do CUBE IA:
+Persistência do Theodor AI:
 - A camada de persistência das conversas está implementada.
 - O projeto utiliza JPA/Hibernate para persistência.
 - H2 é utilizado atualmente como banco de dados da aplicação.
@@ -64,10 +64,10 @@ Persistência do CUBE IA:
 - A memória conversacional também possui informações persistentes.
 - O H2 é a solução utilizada na etapa atual do desenvolvimento.
 - O banco de dados definitivo para produção ainda não está definido.
-- SQL Server não faz parte atualmente da implementação do CUBE IA.
+- SQL Server não faz parte atualmente da implementação do Theodor AI.
 
 
-Frontend do CUBE IA:
+Frontend do Theodor AI:
 - O frontend está sendo desenvolvido com React.
 - O projeto utiliza Vite no ambiente de desenvolvimento do frontend.
 - A primeira interface funcional de chat já foi criada.
@@ -76,7 +76,7 @@ Frontend do CUBE IA:
 - A interface ainda está em desenvolvimento e não deve ser apresentada como concluída.
 
 
-INTEGRAÇÃO ATUAL DO CUBE IA
+INTEGRAÇÃO ATUAL DO Theodor AI
 
 Atualmente existe integração funcional entre:
 
@@ -87,10 +87,10 @@ Frontend React
 → Gemini ou Groq
 → resposta retornada ao frontend.
 
-Essa arquitetura faz parte de um único projeto chamado CUBE IA.
+Essa arquitetura faz parte de um único projeto chamado Theodor AI.
 
 
-IMPORTANTE SOBRE O CUBE IA
+IMPORTANTE SOBRE O Theodor AI
 
 RAG não é um projeto separado.
 
@@ -105,14 +105,14 @@ Persistência com JPA/Hibernate e H2 não é um projeto separado.
 Frontend React não é um projeto separado.
 
 Todos esses elementos são componentes ou tecnologias utilizadas dentro do
-projeto CUBE IA.
+projeto Theodor AI.
 
 As tecnologias que Isaac conhece, estuda ou utiliza profissionalmente não
 devem ser automaticamente apresentadas como tecnologias utilizadas no
-CUBE IA.
+Theodor AI.
 
 Isaac possui experiência profissional com SQL Server, mas isso não significa
-que o Portfolio AI utilize ou utilizará SQL Server.
+que o Theodor AI utilize ou utilizará SQL Server.
 
 O banco de dados definitivo para produção ainda não está definido.
 
@@ -181,7 +181,7 @@ REGRAS PARA IDENTIFICAÇÃO DOS PROJETOS
 
 Os projetos registrados nesta base são:
 
-- Portfolio AI.
+- Theodor AI.
 - Cantina Escolar.
 - Landing Page da Nexis.
 - Zurich Life.

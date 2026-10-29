@@ -22,9 +22,9 @@ public class IntentService {
         );
 
         // A primeira categoria encontrada tem prioridade.
-        if (temPalavra(palavras, "projeto", "projetos")
+        if (temPalavra(palavras, "projeto", "projetos", "theodor")
                 || temTrecho(texto, "portfolio ai", "portfolioai",
-                "portfolio ia", "cube ai", "cube ia")) {
+                "portfolio ia", "theodorai", "theodoria")) {
             return "PROJETOS";
         }
 

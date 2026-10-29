@@ -6,7 +6,7 @@ const LINKS = [
   { id: "inicio", texto: "Início" },
   { id: "sobre", texto: "Sobre mim" },
   { id: "projetos", texto: "Meu projeto" },
-  { id: "cube-ai", texto: "Vamos conversar" },
+  { id: "theodor-ai", texto: "Vamos conversar" },
 ];
 
 export default function Navigation() {
@@ -40,7 +40,7 @@ export default function Navigation() {
     <span className="nav-mobile-label" aria-hidden="true">PORTFÓLIO / ISAAC</span>
     <button ref={botaoRef} className="nav-toggle" aria-label={aberto ? "Fechar menu" : "Abrir menu"} aria-expanded={aberto} aria-controls="menu-principal" onClick={() => setAberto(atual => !atual)}>{aberto ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
     <nav id="menu-principal" className={"nav-panel" + (aberto ? " aberto" : "")} aria-label="Navegação principal">
-      {LINKS.map(({ id, texto }) => <a key={id} href={`#${id}`} aria-current={ativo === id ? "location" : undefined} onClick={() => { setAtivo(id); setAberto(false); }}>{texto}{id === "cube-ai" && <ArrowUpRight size={15} aria-hidden="true" />}</a>)}
+      {LINKS.map(({ id, texto }) => <a key={id} href={`#${id}`} aria-current={ativo === id ? "location" : undefined} onClick={() => { setAtivo(id); setAberto(false); }}>{texto}{id === "theodor-ai" && <ArrowUpRight size={15} aria-hidden="true" />}</a>)}
     </nav>
   </div></header>;
 }

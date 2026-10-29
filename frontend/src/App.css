@@ -11,7 +11,8 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.16; letter-spacing: -.
 [data-reveal].reveal-pronto { opacity: 0; transform: translateY(18px); transition: opacity 600ms ease, transform 600ms ease; }
 [data-reveal].visivel { opacity: 1; transform: none; }
 /* Sobre */
-.sobre-secao { display: grid; grid-template-columns: .8fr 1.2fr; align-items: start; gap: var(--space-8); }
+.sobre-secao { padding: var(--space-8) var(--space-5); background-color: #000; background-image: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%); background-size: 64px 64px; }
+.sobre-painel { display: grid; grid-template-columns: .8fr 1.2fr; align-items: start; gap: var(--space-8); padding: var(--space-6); background: #050505; }
 .sobre-intro h2 { margin: var(--space-5) 0; }
 .sobre-nota { max-width: 28ch; color: var(--texto-suave); font-size: var(--text-sm); line-height: 1.7; }
 .sobre-conteudo { max-width: 60ch; padding-top: var(--space-2); }
@@ -22,31 +23,6 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.16; letter-spacing: -.
 .tecnologias-titulo { font: 10px/1.7 var(--font-mono); font-weight: 400; letter-spacing: .08em; color: var(--texto-suave); margin: 0 0 var(--space-4); }
 .tecnologias-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .tecnologias-lista > li:not(.sr-only) { padding: 8px 12px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: var(--superficie); font: 11px/1.6 var(--font-mono); color: var(--texto); }
-/* Prévia demonstrativa */
-.cube-destaque { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: var(--space-8); }
-.cube-copy h2 { margin: var(--space-5) 0 var(--space-6); }
-.cube-nome { display: flex; align-items: center; gap: var(--space-3); color: var(--destaque); font-weight: 500; font-size: var(--text-lg); margin: 0 0 var(--space-4); }
-.cube-copy > p:not(.eyebrow):not(.cube-nome) { max-width: 46ch; color: var(--texto-suave); font-size: var(--text-base); line-height: 1.7; margin: 0 0 var(--space-6); }
-.cube-legenda { display: block; margin-top: var(--space-5); font: 9px/1.8 var(--font-mono); letter-spacing: .07em; color: var(--texto-suave); }
-.preview-painel { min-width: 0; overflow: hidden; border: 1px solid var(--borda); border-radius: var(--radius-md); background: var(--superficie); box-shadow: var(--shadow-panel); }
-.preview-topo { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 20px var(--space-5); border-bottom: 1px solid var(--borda); font-size: var(--text-sm); }
-.preview-topo > span:first-child { display: inline-flex; align-items: center; gap: var(--space-3); }
-.preview-topo svg { color: var(--destaque); }
-.preview-selo { font: 9px var(--font-mono); letter-spacing: .08em; color: var(--texto-suave); }
-.preview-corpo { padding: var(--space-6) var(--space-5); position: relative; }
-.preview-pergunta { margin: 0 0 var(--space-6) auto; width: fit-content; max-width: 90%; padding: 11px 16px; border-radius: 12px 12px 2px 12px; background: var(--controle); font-size: var(--text-sm); }
-.preview-autor { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); font-size: var(--text-xs); font-weight: 500; }
-.preview-autor svg { color: var(--destaque); }
-.preview-resposta { display: grid; font-size: var(--text-sm); line-height: 1.8; color: var(--texto-suave); }
-.preview-reserva, .preview-digitada { grid-area: 1 / 1; }
-.preview-reserva { visibility: hidden; }
-.preview-cursor { color: var(--destaque); animation: piscar-cursor 1s step-end infinite; }
-.preview-status { display: flex; align-items: center; gap: 4px; position: absolute; bottom: 8px; color: var(--texto-suave); font: 9px var(--font-mono); }
-.preview-status i { display: block; width: 3px; height: 3px; background: var(--destaque); border-radius: 50%; animation: digitando 1.4s ease-in-out infinite; }
-.preview-status i:nth-child(2) { animation-delay: 150ms; }
-.preview-status i:nth-child(3) { animation-delay: 300ms; margin-right: 5px; }
-@keyframes digitando { 0%, 100% { opacity: .4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
-.preview-rodape { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 18px var(--space-5); border-top: 1px solid var(--borda); color: var(--texto-suave); font-size: 11px; }
 /* Chat: comportamento de envio preservado. */
 .ia-cabecalho { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); }
 .historico-botao { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 10px 14px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: transparent; font-size: var(--text-xs); transition: background var(--motion); }
@@ -123,17 +99,16 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.16; letter-spacing: -.
 .portfolio-footer a:hover { color: var(--destaque); }
 .ponto { display: none; }
 @media (min-width: 768px) { .sidebar-recolhida .sidebar { transform: translateX(-100%); visibility: hidden; pointer-events: none; } }
-@media (max-width: 1023px) { .sobre-secao, .cube-destaque { gap: var(--space-6); } }
+@media (max-width: 1023px) { .sobre-painel { gap: var(--space-6); } }
 @media (max-width: 767px) {
   .portfolio { padding-top: 68px; }
   .secao { padding-block: var(--space-8); }
-  .sobre-secao, .cube-destaque { grid-template-columns: 1fr; gap: var(--space-6); }
+  .sobre-secao { padding: var(--space-6) var(--space-3); background-size: 48px 48px; }
+  .sobre-painel { padding: var(--space-5) var(--gutter); }
+  .sobre-painel { grid-template-columns: 1fr; gap: var(--space-6); }
   .sobre-nota { max-width: none; }
   .sobre-conteudo { padding-top: 0; }
   .descricao-digitada { font-size: var(--text-base); }
-  .cube-copy h2 { margin-bottom: var(--space-5); }
-  .preview-corpo { padding: var(--space-5) var(--space-4) var(--space-6); }
-  .preview-topo, .preview-rodape { padding-inline: var(--space-4); }
   .ia-cabecalho { gap: var(--space-2); }
   .ia-cabecalho .eyebrow { font-size: 9px; }
   .historico-botao { padding-inline: 10px; }
