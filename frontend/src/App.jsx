@@ -19,16 +19,7 @@ const sugestoes = [
   { icone: "fileplus", titulo: "Contato", pergunta: "Como posso entrar em contato com o Isaac?" },
 ];
 const FRASES_CAMPO = [
-  "O que você quer saber sobre o Isaac?",
-  "Pergunte sobre os projetos dele…",
-  "Quer conhecer a trajetória dele?",
-  "Quais tecnologias ele usa?",
-  "Descubra o que ele está estudando…",
-  "Qual é o próximo objetivo dele?",
-  "Curioso sobre a Cube AI?",
-  "Vamos falar de código?",
-  "E fora do trabalho, o que ele curte?",
-  "Pode perguntar do seu jeito…",
+  "Digite aqui sua pergunta!",
 ];
 
 const TEMPO_LEITURA = 10000;
@@ -55,9 +46,8 @@ function criarConversa() {
 
 const FRASES_ABERTURA = [
   "Olá, usuário!",
-  "Esse é o portifolio virtual do isaac, bem legal né?",
-  "Quer saber mais sobre ele?",
-  "Explore essa página!",
+  "Esse é o meu portifólio virtual, para facilitar suas curiosidades sobre mim, bem legal né?",
+  "Dê um olhada nela!",
 ];
 function TextoDigitado() {
   const reduzirMovimento = useReducedMotion();
@@ -84,7 +74,7 @@ function TextoDigitado() {
   </div>;
 }
 
-const DESCRICAO_PESSOAL = "Sou desenvolvedor de software e apaixonado por tecnologia. Tenho 19 anos e já trabalho na área.";
+const DESCRICAO_PESSOAL = "";
 
 function DescricaoDigitada() {
   const reduzirMovimento = useReducedMotion();
@@ -183,7 +173,7 @@ function App() {
       if (typeof data.answer !== "string" || !data.answer.trim()) throw new Error("Resposta vazia do servidor");
       atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", texto: data.answer }] }));
     } catch {
-      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: "Não consegui obter uma resposta agora. Tente enviar sua pergunta novamente em alguns instantes." }] }));
+      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: "Ops não consegui obter uma resposta. Tente enviar sua pergunta novamente em alguns instantes." }] }));
       setPergunta(texto);
     } finally {
       clearTimeout(timeout);
@@ -199,7 +189,7 @@ function App() {
       <Navigation />
       <button className="fundo-sidebar" aria-label="Fechar conversas" tabIndex={-1} onClick={fecharMenu} />
       <aside className="sidebar" id="historico" aria-label="Conversas">
-        <div className="sidebar-logo"><strong>Cube AI</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
+        <div className="sidebar-logo"><strong>Theodor AI</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
         <div className="conteudo-sidebar" id="conteudo-sidebar">
         <button className="nova-conversa" onClick={novaConversa} disabled={carregando}><Icon nome="plus" />Nova conversa</button>
         <p className="sidebar-legenda">CONVERSAS</p>
@@ -207,7 +197,7 @@ function App() {
           {!conversas.some(item => item.mensagens.length) && <p className="historico-vazio">Suas conversas aparecem aqui.</p>}
           {conversas.filter(item => item.mensagens.length).map(item => <button key={item.id} disabled={carregando} onClick={() => selecionarConversa(item.id)} aria-current={item.id === conversa.id ? "true" : undefined} title={item.titulo}><Icon nome="chat" /><span>{item.titulo}</span></button>)}
         </nav>
-        <span className="sidebar-rodape">Um pouco mais sobre Isaac.</span>
+        <span className="sidebar-rodape">Um pouco mais sobre o Isaac.</span>
         </div>
       </aside>
       <main id="conteudo">
@@ -215,18 +205,17 @@ function App() {
         <Sobre><DescricaoDigitada /></Sobre>
         <CubePreview />
         <section className="secao-ia secao" id="cube-ai" aria-labelledby="chat-titulo" data-reveal>
-          <div className="ia-cabecalho"><span className="eyebrow">03 / VAMOS CONVERSAR</span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 767px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
+          <div className="ia-cabecalho"><span className="eyebrow"></span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 767px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
           <div className="chat-painel">
-            <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><span className="chat-identidade">CUBE AI</span><h2 id="chat-titulo">O que você quer descobrir<br />sobre o Isaac?</h2>{!iniciou && <p>Projetos, habilidades ou uma curiosidade.<br />Pode perguntar do seu jeito.</p>}</div>
-            {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Cube AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Cube AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Conectando as peças da sua resposta...</span></div>}<div ref={fimRef} /></div>}
-            <label className="campo-label" htmlFor="pergunta">Sua pergunta para a Cube AI</label>
+            <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><span className="chat-identidade"></span><h2 id="chat-titulo">O que você quer descobrir<br />sobre mim?</h2>{!iniciou && <p>Projetos, habilidades ou uma curiosidade<br />O que você quiser.</p>}</div>
+            {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Theodor AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Pensando...</span></div>}<div ref={fimRef} /></div>}
             <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} aria-describedby="ajuda-pergunta" value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
-            <p id="ajuda-pergunta" className="campo-ajuda">Enter para enviar <span aria-hidden="true">·</span> Shift + Enter para uma nova linha</p>
+            <p id="ajuda-pergunta" className="campo-ajuda"> Shift + Enter para uma nova linha</p>
             <div className="perguntas-basicas" aria-label="Perguntas básicas">{sugestoes.map(item => <button key={item.titulo} disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span>{item.titulo}</span><Icon nome={item.icone} /></button>)}</div>
           </div>
         </section>
       </main>
-      <footer className="portfolio-footer"><a className="portfolio-marca" href="#inicio"><span className="ponto" />Isaac</a><span>Ideias, código e boas conversas.</span><a href="#inicio">Voltar ao topo ↑</a></footer>
+      <footer className="portfolio-footer"><a className="portfolio-marca" href="#inicio"></a><a href="#inicio">Voltar ao topo ↑</a></footer>
     </div>
   );
 }

@@ -3,7 +3,6 @@
 .secao { padding-block: var(--space-9); border-top: 1px solid var(--borda); }
 h2 { margin: 0; font-size: var(--text-h2); line-height: 1.16; letter-spacing: -.045em; font-weight: 500; }
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0; font: 10px/1.7 var(--font-mono); letter-spacing: .1em; color: var(--texto-suave); }
-.status-ponto { width: 6px; height: 6px; border-radius: 50%; background: var(--destaque); }
 .botao-primario, .botao-texto { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-3); min-height: 48px; padding: 13px 20px; font-size: var(--text-sm); line-height: 1.5; font-weight: 500; border-radius: var(--radius-sm); transition: background var(--motion), transform var(--motion), box-shadow var(--motion); }
 .botao-primario { background: var(--destaque); color: #080808; box-shadow: var(--shadow-accent); }
 .botao-primario:hover { background: var(--destaque-hover); transform: translateY(-2px); }

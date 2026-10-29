@@ -4,7 +4,7 @@ import "./Navigation.css";
 
 const LINKS = [
   { id: "inicio", texto: "Início" },
-  { id: "sobre", texto: "Sobre" },
+  { id: "sobre", texto: "Sobre mim" },
   { id: "projetos", texto: "Meu projeto" },
   { id: "cube-ai", texto: "Vamos conversar" },
 ];
