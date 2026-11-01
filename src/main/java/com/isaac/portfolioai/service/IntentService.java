@@ -22,6 +22,13 @@ public class IntentService {
         );
 
         // A primeira categoria encontrada tem prioridade.
+        if (temPalavra(palavras, "contato", "contatos", "telefone", "celular",
+                "numero", "email", "whatsapp", "zap")
+                || temTrecho(texto, "e-mail", "falar com isaac", "falar com o isaac",
+                "entrar em contato")) {
+            return "CONTATO";
+        }
+
         if (temPalavra(palavras, "projeto", "projetos", "theodor")
                 || temTrecho(texto, "portfolio ai", "portfolioai",
                 "portfolio ia", "theodorai", "theodoria")) {

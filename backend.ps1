@@ -7,6 +7,30 @@ $ErrorActionPreference = 'Stop'
 Push-Location $PSScriptRoot
 try {
     if ($Acao -eq 'iniciar') {
+        $backendPort = if ($env:SERVER_PORT) { [int]$env:SERVER_PORT } else { 8080 }
+        $backendConnection = New-Object System.Net.Sockets.TcpClient
+        try {
+            $backendConnection.Connect('localhost', $backendPort)
+            $backendPortOccupied = $true
+        } catch [System.Net.Sockets.SocketException] {
+            $backendPortOccupied = $false
+        } finally {
+            $backendConnection.Dispose()
+        }
+        if ($backendPortOccupied) {
+            throw "A porta $backendPort ja esta em uso. Se o backend estiver aberto em outro terminal, pare com Ctrl+C antes de iniciar novamente. Se foi iniciado pelo VS Code, use Shift+F5."
+        }
+
+        $backendDatabase = Join-Path $PSScriptRoot 'data/portfolioai.mv.db'
+        if (Test-Path -LiteralPath $backendDatabase) {
+            try {
+                $backendDatabaseCheck = [System.IO.File]::Open($backendDatabase, 'Open', 'ReadWrite', 'None')
+                $backendDatabaseCheck.Dispose()
+            } catch [System.IO.IOException] {
+                throw 'O banco do portfolio esta em uso por outra instancia. Pare o backend anterior antes de iniciar novamente. Nao exclua o banco de dados.'
+            }
+        }
+
         $envFile = Join-Path $PSScriptRoot '.env'
         if (Test-Path -LiteralPath $envFile) {
             foreach ($line in Get-Content -LiteralPath $envFile -Encoding UTF8) {

@@ -60,7 +60,13 @@ powershell -ExecutionPolicy Bypass -File .\backend.ps1 empacotar
 
 `iniciar` carrega as chaves de `.env` (ou usa as variáveis já definidas no
 terminal) e verifica se foram preenchidas antes de executar o backend.
-Use **Ctrl+C** para parar. `testar` executa os testes de persistência;
+Use **Ctrl+C** para parar. `testar` executa os testes de persistência.
+
+Execute apenas uma instância do backend por vez. O script verifica se a porta
+ou o banco já estão em uso antes de iniciar. Para carregar mudanças na base
+de conhecimento, pare a instância anterior com **Ctrl+C** (ou **Shift+F5**
+no depurador do VS Code) e execute `iniciar` novamente.
+
 `empacotar` gera o JAR sem executar testes. A opção `ExecutionPolicy Bypass`
 vale apenas para esse processo, sem alterar a política do Windows.
 

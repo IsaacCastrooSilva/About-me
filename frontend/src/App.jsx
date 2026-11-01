@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Navigation from "./components/Navigation";
@@ -52,17 +52,21 @@ function App() {
   const [carregando, setCarregando] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [sidebarRecolhida, setSidebarRecolhida] = useState(true);
-  const fimRef = useRef(null);
+  const mensagensRef = useRef(null);
+  const acompanharMensagensRef = useRef(true);
   const entradaRef = useRef(null);
   const menuRef = useRef(null);
   const requisicaoRef = useRef(null);
   const conversa = conversas.find((item) => item.id === ativaId) || conversas[0];
   const iniciou = conversa.mensagens.length > 0;
 
-  useEffect(() => {
-    if (!conversa.mensagens.length) return;
-    fimRef.current?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
-  }, [conversa.mensagens, carregando]);
+  useLayoutEffect(() => {
+    const lista = mensagensRef.current;
+    if (lista && acompanharMensagensRef.current) {
+      // Rola somente as mensagens, sem deslocar o restante do site.
+      lista.scrollTop = lista.scrollHeight;
+    }
+  }, [conversa.id, conversa.mensagens, carregando]);
 
   useEffect(() => {
     const campo = entradaRef.current;
@@ -80,10 +84,11 @@ function App() {
   }
 
   function selecionarConversa(id) {
+    acompanharMensagensRef.current = true;
     setAtivaId(id);
     setPergunta("");
     setMenuAberto(false);
-    entradaRef.current?.focus();
+    entradaRef.current?.focus({ preventScroll: true });
   }
 
   function novaConversa() {
@@ -97,6 +102,8 @@ function App() {
   async function enviarMensagem(texto = pergunta) {
     texto = texto.trim();
     if (!texto || requisicaoRef.current) return;
+    acompanharMensagensRef.current = true;
+    entradaRef.current?.focus({ preventScroll: true });
     const id = conversa.id;
     const controller = new AbortController();
     requisicaoRef.current = controller;
@@ -123,7 +130,6 @@ function App() {
       clearTimeout(timeout);
       requisicaoRef.current = null;
       setCarregando(false);
-      entradaRef.current?.focus();
     }
   }
 
@@ -162,7 +168,10 @@ function App() {
           <div className="ia-cabecalho"><span className="eyebrow"></span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 767px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
           <div className="chat-painel">
             <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><span className="chat-identidade"></span><h2 id="chat-titulo">O que você quer descobrir<br />sobre mim?</h2>{!iniciou && <p>Projetos, habilidades ou uma curiosidade<br />O que você quiser.</p>}</div>
-            {iniciou && <div className="mensagens" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Theodor AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Pensando...</span></div>}<div ref={fimRef} /></div>}
+            {iniciou && <div className="mensagens" ref={mensagensRef} onScroll={e => {
+              const lista = e.currentTarget;
+              acompanharMensagensRef.current = lista.scrollHeight - lista.scrollTop - lista.clientHeight <= 48;
+            }} role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Theodor AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Pensando...</span></div>}</div>}
             <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} aria-label="Sua pergunta para o Theodor AI" aria-describedby="ajuda-pergunta" value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
             <p id="ajuda-pergunta" className="campo-ajuda"> Shift + Enter para uma nova linha</p>
             <div className="perguntas-basicas" aria-label="Perguntas básicas">{sugestoes.map(item => <button key={item.titulo} disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span>{item.titulo}</span><Icon nome={item.icone} /></button>)}</div>

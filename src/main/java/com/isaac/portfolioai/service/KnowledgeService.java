@@ -104,6 +104,11 @@ public class KnowledgeService {
         );
 
 
+        carregarDocumento(
+                "knowledge/contato.txt",
+                "CONTATO"
+        );
+
         criarChunks();
 
         gerarEmbeddingsDosChunks();
@@ -249,6 +254,16 @@ public class KnowledgeService {
                                 categoriaPrioritaria
                         );
 
+
+        // Contatos explicitos devem chegar ao modelo mesmo com score semantico baixo.
+        if ("CONTATO".equals(categoriaDetectada)) {
+            selecionados = new ArrayList<>(selecionados);
+            for (KnowledgeChunk chunk : chunks) {
+                if ("CONTATO".equals(chunk.getCategoria()) && !selecionados.contains(chunk)) {
+                    selecionados.add(chunk);
+                }
+            }
+        }
 
         /*
          * O conteúdo recuperado pelo RAG é tratado

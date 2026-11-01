@@ -27,7 +27,7 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.16; letter-spacing: -.
 .ia-cabecalho { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); }
 .historico-botao { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 10px 14px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: transparent; font-size: var(--text-xs); transition: background var(--motion); }
 .historico-botao:hover { background: var(--superficie-hover); }
-.chat-painel { max-width: 760px; width: 100%; margin: var(--space-7) auto 0; }
+.chat-painel { overflow-anchor: none; max-width: 760px; width: 100%; margin: var(--space-7) auto 0; }
 .convite-conversa { text-align: center; margin-bottom: var(--space-7); }
 .chat-identidade { display: inline-block; margin-bottom: var(--space-5); font: 10px var(--font-mono); color: var(--destaque); letter-spacing: .12em; }
 .convite-conversa h2 { font-size: clamp(28px, 3.5vw, 40px); }
@@ -56,7 +56,7 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.16; letter-spacing: -.
 .perguntas-basicas button:hover:not(:disabled) { color: var(--texto); border-color: var(--destaque); background: var(--accent-soft); }
 .perguntas-basicas button:disabled { opacity: .6; }
 .perguntas-basicas button svg { order: -1; width: 15px; height: 15px; }
-.mensagens { max-height: min(560px, 62dvh); overflow-y: auto; overflow-x: hidden; padding: var(--space-4) var(--space-2); margin-bottom: var(--space-5); scrollbar-width: thin; scrollbar-color: var(--borda-forte) transparent; }
+.mensagens { overscroll-behavior-y: contain; max-height: min(560px, 62dvh); overflow-y: auto; overflow-x: hidden; padding: var(--space-4) var(--space-2); margin-bottom: var(--space-5); scrollbar-width: thin; scrollbar-color: var(--borda-forte) transparent; }
 .mensagem { font-size: var(--text-sm); line-height: 1.8; overflow-wrap: anywhere; margin-bottom: var(--space-6); }
 .mensagem.user { width: fit-content; max-width: 85%; margin-left: auto; padding: 12px 18px; border-radius: 14px 14px 2px 14px; background: var(--controle); white-space: pre-wrap; }
 .mensagem.user p { margin: 0; }
