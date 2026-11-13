@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
+import Pixels from "./Pixels";
 import "./Navigation.css";
 
 const LINKS = [
@@ -21,7 +22,13 @@ export default function Navigation() {
       if (visivel) setAtivo(visivel.target.id);
     }, { rootMargin: "-15% 0px -65% 0px", threshold: 0 });
     LINKS.forEach(({ id }) => { const secao = document.getElementById(id); if (secao) observador.observe(secao); });
-    const aoRolar = () => setCompacto(window.scrollY > 24);
+    const aoRolar = () => {
+      setCompacto(window.scrollY > 24);
+      // Barra de progresso de leitura na base do cabeçalho.
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      headerRef.current?.style.setProperty("--progresso", total > 0 ? Math.min(1, window.scrollY / total).toFixed(4) : "0");
+    };
+    aoRolar();
     const aoClicarFora = evento => { if (!headerRef.current?.contains(evento.target)) setAberto(false); };
     const aoRedimensionar = () => { if (window.innerWidth >= 768) setAberto(false); };
     window.addEventListener("scroll", aoRolar, { passive: true });
@@ -37,10 +44,10 @@ export default function Navigation() {
   return <header ref={headerRef} className={"site-header" + (compacto ? " compacto" : "")} onKeyDown={evento => {
     if (evento.key === "Escape" && aberto) { setAberto(false); botaoRef.current?.focus(); }
   }}><div className="nav-container">
-    <span className="nav-mobile-label" aria-hidden="true">PORTFÓLIO / ISAAC</span>
+    <a className="nav-marca" href="#inicio" onClick={() => { setAtivo("inicio"); setAberto(false); }}><Pixels />Isaac de Castro</a>
     <button ref={botaoRef} className="nav-toggle" aria-label={aberto ? "Fechar menu" : "Abrir menu"} aria-expanded={aberto} aria-controls="menu-principal" onClick={() => setAberto(atual => !atual)}>{aberto ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
     <nav id="menu-principal" className={"nav-panel" + (aberto ? " aberto" : "")} aria-label="Navegação principal">
-      {LINKS.map(({ id, texto }) => <a key={id} href={`#${id}`} aria-current={ativo === id ? "location" : undefined} onClick={() => { setAtivo(id); setAberto(false); }}>{texto}{id === "theodor-ai" && <ArrowUpRight size={15} aria-hidden="true" />}</a>)}
+      {LINKS.map(({ id, texto }) => <a key={id} href={`#${id}`} aria-current={ativo === id ? "location" : undefined} onClick={() => { setAtivo(id); setAberto(false); }}><span className="nav-marcador" aria-hidden="true">&gt;</span>{texto}{id === "theodor-ai" && <ArrowUpRight size={15} aria-hidden="true" />}</a>)}
     </nav>
   </div></header>;
 }

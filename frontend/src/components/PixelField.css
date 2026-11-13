@@ -1,0 +1,8 @@
+/* O portfólio vira um contexto de empilhamento próprio: o canvas (z-index -1) fica
+   acima do fundo dele e abaixo do conteúdo, sem isolar o conteúdo numa camada.
+   Assim o mix-blend-mode do olho do hero continua se misturando com os pixels. */
+.portfolio { isolation: isolate; }
+.pixel-field { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
+/* As mensagens ficam direto sobre o campo, sem bloco de fundo. Um contorno escuro
+   colado nas letras mantém o texto legível quando um pixel acende atrás dele. */
+.mensagem, .resposta-pendente { text-shadow: 0 0 2px var(--fundo), 0 0 6px var(--fundo), 0 0 12px var(--fundo); }

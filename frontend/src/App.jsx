@@ -4,40 +4,32 @@ import remarkGfm from "remark-gfm";
 import Navigation from "./components/Navigation";
 import Hero from "./components/Hero";
 import Sobre from "./components/Sobre";
-import TheodorPreview from "./components/TheodorPreview";
+import Theodor from "./components/Theodor";
+import Pixels from "./components/Pixels";
+import PixelField from "./components/PixelField";
+import RespostaDigitada from "./components/RespostaDigitada";
 import Icon from "./components/Icon";
 import useReveal from "./hooks/useReveal";
+import useReducedMotion from "./hooks/useReducedMotion";
+import sugerirContinuacoes from "./continuacoes";
 import "./App.css";
 
 const API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8080/api/chat";
 
 const sugestoes = [
-  { icone: "brain", titulo: "Sobre mim", pergunta: "Quem é o Isaac?" },
-  { icone: "project", titulo: "Projetos", pergunta: "Quais projetos o Isaac desenvolveu?" },
-  { icone: "verified", titulo: "Habilidades", pergunta: "Quais são as principais habilidades do Isaac?" },
-  { icone: "fileplus", titulo: "Contato", pergunta: "Como posso entrar em contato com o Isaac?" },
-];
-const FRASES_CAMPO = [
-  "Digite aqui sua pergunta!",
+  { titulo: "Quem é o Isaac?", pergunta: "Quem é o Isaac?" },
+  { titulo: "Quais projetos ele desenvolveu?", pergunta: "Quais projetos o Isaac desenvolveu?" },
+  { titulo: "Quais são as principais habilidades dele?", pergunta: "Quais são as principais habilidades do Isaac?" },
+  { titulo: "Como entrar em contato?", pergunta: "Como posso entrar em contato com o Isaac?" },
 ];
 
-const TEMPO_LEITURA = 10000;
-const TEMPO_TRANSICAO = 1800;
+const ANO = new Date().getFullYear();
 
-function SugestaoAnimada() {
-  const [estado, setEstado] = useState({ indice: 0, fase: "parada" });
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setEstado(atual => {
-        if (atual.fase === "parada") return { ...atual, fase: "saindo" };
-        if (atual.fase === "saindo") return { indice: (atual.indice + 1) % FRASES_CAMPO.length, fase: "entrando" };
-        return { ...atual, fase: "parada" };
-      });
-    }, estado.fase === "parada" ? TEMPO_LEITURA : TEMPO_TRANSICAO);
-    return () => clearTimeout(timer);
-  }, [estado]);
-  return <span className="placeholder-rotativo" style={{ '--tempo-transicao': TEMPO_TRANSICAO + 'ms' }} aria-hidden="true"><span key={estado.indice} className={estado.fase}>{FRASES_CAMPO[estado.indice]}</span></span>;
-}
+// Canais de contato públicos. Telefone não é divulgado.
+const CONTATOS = [
+  { nome: "E-mail", url: "mailto:isaaccastro10092007@gmail.com" },
+  { nome: "GitHub", url: "https://github.com/IsaacCastrooSilva" },
+];
 
 function criarConversa() {
   return { id: crypto.randomUUID(), titulo: "Nova conversa", mensagens: [] };
@@ -45,6 +37,7 @@ function criarConversa() {
 
 function App() {
   useReveal();
+  const reduzir = useReducedMotion();
   // Conversas desta sessão: cada uma tem seu próprio contexto na API.
   const [conversas, setConversas] = useState(() => [criarConversa()]);
   const [ativaId, setAtivaId] = useState(null);
@@ -52,6 +45,14 @@ function App() {
   const [carregando, setCarregando] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [sidebarRecolhida, setSidebarRecolhida] = useState(true);
+  // Aumenta a cada resposta recebida: dispara a onda no campo de pixels.
+  const [pulso, setPulso] = useState(0);
+  // Campo em estilo terminal: o texto visível é um espelho do textarea,
+  // com cursor em bloco na posição `cursor`.
+  const [cursor, setCursor] = useState(0);
+  const [focado, setFocado] = useState(false);
+  const espelhoRef = useRef(null);
+  const cursorVisivel = focado && !carregando;
   const mensagensRef = useRef(null);
   const acompanharMensagensRef = useRef(true);
   const entradaRef = useRef(null);
@@ -59,6 +60,19 @@ function App() {
   const requisicaoRef = useRef(null);
   const conversa = conversas.find((item) => item.id === ativaId) || conversas[0];
   const iniciou = conversa.mensagens.length > 0;
+  const totalConversas = conversas.filter(item => item.mensagens.length).length;
+  const ultima = conversa.mensagens.at(-1);
+  // Só sugere continuações com a resposta já inteira na tela.
+  const continuacoes = !carregando && ultima?.autor === "ai" && !ultima.erro && !ultima.digitando ? sugerirContinuacoes(conversa.mensagens) : [];
+
+  function rolarParaFim() {
+    const lista = mensagensRef.current;
+    if (lista && acompanharMensagensRef.current) lista.scrollTop = lista.scrollHeight;
+  }
+
+  function terminarDigitacao(conversaId, indice) {
+    setConversas((anteriores) => anteriores.map((item) => item.id !== conversaId ? item : { ...item, mensagens: item.mensagens.map((mensagem, i) => i === indice ? { ...mensagem, digitando: false } : mensagem) }));
+  }
 
   useLayoutEffect(() => {
     const lista = mensagensRef.current;
@@ -66,7 +80,7 @@ function App() {
       // Rola somente as mensagens, sem deslocar o restante do site.
       lista.scrollTop = lista.scrollHeight;
     }
-  }, [conversa.id, conversa.mensagens, carregando]);
+  }, [conversa.id, conversa.mensagens, carregando, continuacoes.length]);
 
   useEffect(() => {
     const campo = entradaRef.current;
@@ -74,6 +88,17 @@ function App() {
       campo.style.height = "auto";
       campo.style.height = `${Math.min(campo.scrollHeight, 180)}px`;
     }
+  }, [pergunta]);
+
+  useEffect(() => {
+    // Acompanha o cursor do textarea (setas, clique, seleção, texto trocado por código).
+    const sincronizar = () => {
+      const campo = entradaRef.current;
+      if (campo && document.activeElement === campo) setCursor(campo.selectionStart);
+    };
+    sincronizar();
+    document.addEventListener("selectionchange", sincronizar);
+    return () => document.removeEventListener("selectionchange", sincronizar);
   }, [pergunta]);
 
   useEffect(() => () => requisicaoRef.current?.abort(), []);
@@ -122,10 +147,11 @@ function App() {
       if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
       const data = await response.json();
       if (typeof data.answer !== "string" || !data.answer.trim()) throw new Error("Resposta vazia do servidor");
-      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", texto: data.answer }] }));
+      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", texto: data.answer, digitando: !reduzir }] }));
+      setPulso((atual) => atual + 1);
     } catch {
-      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: "Ops não consegui obter uma resposta. Tente enviar sua pergunta novamente em alguns instantes." }] }));
-      setPergunta(texto);
+      // O campo continua vazio; a pergunta fica guardada no erro para reenviar.
+      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: "Não consegui obter uma resposta agora. Tente de novo em alguns instantes.", pergunta: texto }] }));
     } finally {
       clearTimeout(timeout);
       requisicaoRef.current = null;
@@ -143,42 +169,47 @@ function App() {
     entradaRef.current?.focus({ preventScroll: true });
   }
 
+  function alternarHistorico() {
+    if (window.matchMedia("(max-width: 767px)").matches) setMenuAberto(!menuAberto);
+    else setSidebarRecolhida(!sidebarRecolhida);
+  }
+
   return (
-    <div className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
+    <div className={"app portfolio" + (menuAberto ? " menu-aberto" : "") + (sidebarRecolhida ? " sidebar-recolhida" : "") + (menuAberto || !sidebarRecolhida ? " sidebar-aberta" : "")} onKeyDown={e => { if(e.key === "Escape" && menuAberto) fecharMenu(); }}>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
+      <PixelField pensando={carregando} pulso={pulso} />
       <Navigation />
       <button className="fundo-sidebar" aria-label="Fechar conversas" tabIndex={-1} onClick={fecharMenu} />
       <aside className="sidebar" id="historico" aria-label="Conversas">
-        <div className="sidebar-logo"><strong>Theodor AI</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
+        <div className="sidebar-logo"><Pixels /><strong>Conversas</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
         <div className="conteudo-sidebar" id="conteudo-sidebar">
         <button className="nova-conversa" onClick={novaConversa} disabled={carregando}><Icon nome="plus" />Nova conversa</button>
-        <p className="sidebar-legenda">CONVERSAS</p>
         <nav className="lista-conversas" aria-label="Histórico de conversas">
-          {!conversas.some(item => item.mensagens.length) && <p className="historico-vazio">Suas conversas aparecem aqui.</p>}
-          {conversas.filter(item => item.mensagens.length).map(item => <button key={item.id} disabled={carregando} onClick={() => selecionarConversa(item.id)} aria-current={item.id === conversa.id ? "true" : undefined} title={item.titulo}><Icon nome="chat" /><span>{item.titulo}</span></button>)}
+          {!totalConversas && <p className="historico-vazio">Suas conversas desta visita aparecem aqui.</p>}
+          {conversas.filter(item => item.mensagens.length).map(item => <button key={item.id} disabled={carregando} onClick={() => selecionarConversa(item.id)} aria-current={item.id === conversa.id ? "true" : undefined} title={item.titulo}><span>{item.titulo}</span></button>)}
         </nav>
-        <span className="sidebar-rodape">Um pouco mais sobre o Isaac.</span>
+        <span className="sidebar-rodape">Ficam só nesta aba do navegador.</span>
         </div>
       </aside>
       <main id="conteudo">
         <Hero />
         <Sobre />
-        <TheodorPreview onIniciarConversa={abrirChat} ocupado={carregando} />
+        <Theodor onIniciarConversa={abrirChat} ocupado={carregando} />
         <section className="secao-ia secao" id="theodor-ai" aria-labelledby="chat-titulo" data-reveal>
-          <div className="ia-cabecalho"><span className="eyebrow"></span><button ref={menuRef} className="historico-botao" onClick={() => { if (window.matchMedia("(max-width: 767px)").matches) { setMenuAberto(!menuAberto); } else { setSidebarRecolhida(!sidebarRecolhida); } }} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas</button></div>
+          <div className="secao-topo"><p className="rotulo"><Pixels />Vamos conversar</p><button ref={menuRef} className="historico-botao" onClick={alternarHistorico} aria-expanded={menuAberto || !sidebarRecolhida} aria-controls="historico"><Icon nome="panel" />Conversas{totalConversas > 0 && <span className="historico-contagem">{totalConversas}</span>}</button></div>
           <div className="chat-painel">
-            <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><span className="chat-identidade"></span><h2 id="chat-titulo">O que você quer descobrir<br />sobre mim?</h2>{!iniciou && <p>Projetos, habilidades ou uma curiosidade<br />O que você quiser.</p>}</div>
+            <div className={"convite-conversa" + (iniciou ? " chat-iniciado" : "")}><h2 id="chat-titulo">O que você quer descobrir sobre mim?</h2>{!iniciou && <p>Pergunte ao Theodor sobre projetos, experiência, tecnologias ou alguma curiosidade.</p>}</div>
             {iniciou && <div className="mensagens" ref={mensagensRef} onScroll={e => {
               const lista = e.currentTarget;
               acompanharMensagensRef.current = lista.scrollHeight - lista.scrollTop - lista.clientHeight <= 48;
-            }} role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}>{mensagem.autor === "ai" ? <><div className="autor"><span>Theodor AI</span></div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div></> : <p>{mensagem.texto}</p>}</article>)}{carregando && <div className="resposta-pendente" role="status"><span>Pensando...</span></div>}</div>}
-            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><div className="campo-pergunta"><textarea id="pergunta" ref={entradaRef} aria-label="Sua pergunta para o Theodor AI" aria-describedby="ajuda-pergunta" value={pergunta} onChange={e => setPergunta(e.target.value)} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} rows={1} readOnly={carregando} />{!pergunta && !carregando && <SugestaoAnimada />}</div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
-            <p id="ajuda-pergunta" className="campo-ajuda"> Shift + Enter para uma nova linha</p>
-            <div className="perguntas-basicas" aria-label="Perguntas básicas">{sugestoes.map(item => <button key={item.titulo} disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span>{item.titulo}</span><Icon nome={item.icone} /></button>)}</div>
+            }} role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}><div className="autor" aria-hidden="true">{mensagem.autor === "ai" ? <><Pixels />Theodor</> : "Você"}</div>{mensagem.autor !== "ai" ? <p>{mensagem.texto}</p> : mensagem.digitando ? <RespostaDigitada texto={mensagem.texto} aoAvancar={rolarParaFim} aoTerminar={() => terminarDigitacao(conversa.id, index)} /> : <div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div>}{mensagem.erro && mensagem.pergunta && index === conversa.mensagens.length - 1 && <button type="button" className="tentar-novamente" disabled={carregando} onClick={() => enviarMensagem(mensagem.pergunta)}>Tentar de novo</button>}</article>)}{carregando && <div className="resposta-pendente" role="status"><Pixels animado />Buscando nas minhas informações…</div>}{continuacoes.length > 0 && <div className="continuacoes"><p className="rotulo" id="continuacoes-titulo">Continue por aqui</p><ul aria-labelledby="continuacoes-titulo">{continuacoes.map(item => <li key={item}><button type="button" onClick={() => enviarMensagem(item)}>{item}<Icon nome="arrowRight" /></button></li>)}</ul></div>}</div>}
+            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><label className="compositor-prompt" htmlFor="pergunta" aria-hidden="true">&gt;</label><div className="campo-terminal"><div className="terminal-espelho" ref={espelhoRef} aria-hidden="true">{[...pergunta].flatMap((letra, indice) => [indice === cursor && cursorVisivel ? <span key="cursor" className="cursor-bloco" /> : null, <span key={indice} className="tecla">{letra}</span>])}{cursor >= pergunta.length && cursorVisivel && <span className="cursor-bloco" />}{"​"}</div><textarea id="pergunta" ref={entradaRef} aria-label="Sua pergunta para o Theodor AI" aria-describedby="ajuda-pergunta" placeholder="Escreva sua pergunta" value={pergunta} onChange={e => { setPergunta(e.target.value); setCursor(e.target.selectionStart); }} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} onFocus={() => setFocado(true)} onBlur={() => setFocado(false)} onScroll={e => { if (espelhoRef.current) espelhoRef.current.scrollTop = e.currentTarget.scrollTop; }} rows={1} readOnly={carregando} spellCheck={false} /></div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
+            <p id="ajuda-pergunta" className="campo-ajuda"><kbd>Enter</kbd> envia · <kbd>Shift</kbd> + <kbd>Enter</kbd> quebra a linha</p>
+            {!iniciou && <div className="perguntas-basicas"><p className="rotulo" id="sugestoes-titulo">Ou comece por aqui</p><ul aria-labelledby="sugestoes-titulo">{sugestoes.map((item, indice) => <li key={item.titulo}><button disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span className="sugestao-numero" aria-hidden="true">{String(indice + 1).padStart(2, "0")}</span><span>{item.titulo}</span><Icon nome="arrowRight" /></button></li>)}</ul></div>}
           </div>
         </section>
       </main>
-      <footer className="portfolio-footer"><a className="portfolio-marca" href="#inicio"></a><a href="#inicio">Voltar ao topo ↑</a></footer>
+      <footer className="portfolio-footer"><span className="portfolio-marca"><Pixels />Isaac de Castro Silva · {ANO}</span><nav className="footer-contato" aria-label="Contato">{CONTATOS.map(item => <a key={item.nome} href={item.url} {...(item.url.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}>{item.nome}</a>)}</nav><a href="#inicio">Voltar ao topo ↑</a></footer>
     </div>
   );
 }
