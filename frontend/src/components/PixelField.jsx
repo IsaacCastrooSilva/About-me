@@ -20,6 +20,9 @@ const FAISCAS_PENSANDO = 6;   // vezes mais pixels acesos enquanto o Theodor pen
 
 // `pensando`: enquanto o Theodor busca a resposta, ondas saem do campo de pergunta.
 // `pulso`: a cada mudança (resposta recebida), sai uma onda mais forte nas três cores.
+const claro = () => document.documentElement.dataset.theme === "light";
+const corBase = () => (claro() ? "0, 0, 0" : "255, 255, 255");
+
 export default function PixelField({ pensando = false, pulso = 0 }) {
   const canvasRef = useRef(null);
   const reduzir = useReducedMotion();
@@ -106,7 +109,7 @@ export default function PixelField({ pensando = false, pulso = 0 }) {
       colunas = Math.ceil(largura / PASSO);
       linhas = Math.ceil(altura / PASSO);
       gctx.clearRect(0, 0, largura, altura);
-      gctx.fillStyle = `rgba(255, 255, 255, ${ALPHA_GRADE})`;
+      gctx.fillStyle = `rgba(${corBase()}, ${ALPHA_GRADE * (claro() ? 1.6 : 1)})`;
       for (let c = 0; c < colunas; c++) {
         for (let l = 0; l < linhas; l++) gctx.fillRect(posicao(c) - TAMANHO / 2, posicao(l) - TAMANHO / 2, TAMANHO, TAMANHO);
       }
@@ -124,7 +127,7 @@ export default function PixelField({ pensando = false, pulso = 0 }) {
         const c1 = Math.min(colunas - 1, Math.ceil((mouse.x + RAIO_MOUSE) / PASSO));
         const l0 = Math.max(0, Math.floor((mouse.y - RAIO_MOUSE) / PASSO));
         const l1 = Math.min(linhas - 1, Math.ceil((mouse.y + RAIO_MOUSE) / PASSO));
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = `rgb(${corBase()})`;
         for (let c = c0; c <= c1; c++) {
           for (let l = l0; l <= l1; l++) {
             const distancia = Math.hypot(posicao(c) - mouse.x, posicao(l) - mouse.y);
@@ -174,12 +177,22 @@ export default function PixelField({ pensando = false, pulso = 0 }) {
       desenhar(1);
     }
 
+    // Pontos claros no modo escuro e escuros no modo claro; refaz tudo quando o tema muda.
+    function aplicarTema() {
+      const atual = getComputedStyle(document.documentElement);
+      cores.splice(0, 3, ...["--pixel-r", "--pixel-g", "--pixel-b"].map(nome => atual.getPropertyValue(nome).trim() || "#ffffff"));
+      medir();
+      if (reduzir) desenharParado();
+    }
+    const observadorTema = new MutationObserver(aplicarTema);
+    observadorTema.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
     medir();
     const aoRedimensionar = () => { medir(); if (reduzir) desenharParado(); };
     window.addEventListener("resize", aoRedimensionar);
     if (reduzir) {
       desenharParado();
-      return () => window.removeEventListener("resize", aoRedimensionar);
+      return () => { observadorTema.disconnect(); window.removeEventListener("resize", aoRedimensionar); };
     }
 
     const agora = performance.now();
@@ -193,6 +206,7 @@ export default function PixelField({ pensando = false, pulso = 0 }) {
     emitirRef.current = emitir;
     iniciar();
     return () => {
+      observadorTema.disconnect();
       parar();
       emitirRef.current = null;
       window.removeEventListener("resize", aoRedimensionar);

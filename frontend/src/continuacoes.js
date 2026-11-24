@@ -3,12 +3,12 @@
 // (src/main/resources/knowledge). Ao adicionar um assunto lá, adicione aqui.
 const TOPICOS = [
   {
-    chaves: ["projeto", "theodor", "cantina", "landing", "zurich", "rodar", "rag", "embedding"],
+    chaves: ["projeto", "theodor", "cantina", "rodar", "rag", "embedding"],
     perguntas: ["Como o Theodor AI funciona por dentro?", "Quais outros projetos o Isaac já fez?", "O que foi o projeto da Cantina Escolar?"],
   },
   {
-    chaves: ["trabalh", "experiência", "experiencia", "itpower", "júnior", "junior", "nexis", "empresa", "cargo", "profission"],
-    perguntas: ["O que o Isaac faz na ITpower?", "O que é a Nexis?", "Em quais projetos ele atua no trabalho?"],
+    chaves: ["trabalh", "experiência", "experiencia", "itpower", "júnior", "junior", "empresa", "cargo", "profission"],
+    perguntas: ["O que o Isaac faz na ITpower?", "Quais tecnologias ele usa no trabalho?","Em quais projetos ele atua no trabalho?"],
   },
   {
     chaves: ["tecnologia", "java", "spring", "react", "sql", "coldfusion", "python", "habilidade", "linguage", "ferramenta"],

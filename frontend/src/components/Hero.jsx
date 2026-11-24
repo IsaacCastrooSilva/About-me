@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import Pixels from "./Pixels";
 import useReducedMotion from "../hooks/useReducedMotion";
 import "./Hero.css";
 
@@ -37,15 +36,14 @@ export default function Hero() {
   }, [reduzir]);
 
   return <section id="inicio" className="hero" aria-labelledby="hero-titulo">
-    <div className="hero-meta">
-      <p className="rotulo"><Pixels />Desenvolvedor de Software Backend</p>
-      <p className="rotulo">Barueri, São Paulo — Brasil</p>
-    </div>
     <div className="hero-copy">
+      <p className="hero-etiqueta">Desenvolvedor Back-end <span aria-hidden="true">·</span> Barueri, SP</p>
       <h1 id="hero-titulo">Isaac de<br />Castro Silva</h1>
       <p className="hero-valor">Trabalho com sistemas web, integrações de APIs e automação de processos. Este portfólio tem uma IA que eu construí para responder sobre mim.</p>
       <div className="hero-acoes"><a href="#theodor-ai" className="botao-primario">Falar com a minha IA<ArrowUpRight size={18} aria-hidden="true" /></a><a href="#sobre" className="botao-texto">Sobre mim<ArrowDown size={16} aria-hidden="true" /></a></div>
     </div>
+    {/* Transparência proporcional ao brilho: preto some, pixels coloridos ficam com a cor original. */}
+    <svg width="0" height="0" aria-hidden="true" style={{ position: "absolute" }}><filter id="olho-sem-preto" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 2 2 0 0" /></filter></svg>
     <div className="hero-arte" ref={arteRef}>
       <img src={reduzir ? "/hero-eye-poster.png" : "/hero-eye.gif"} alt="" width="480" height="480" fetchPriority="high" decoding="async" />
     </div>

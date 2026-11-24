@@ -138,31 +138,6 @@ O projeto possui:
 
 
 ==================================================
-LANDING PAGE DA NEXIS
-==================================================
-
-Tipo: Projeto de desenvolvimento web.
-
-Isaac desenvolveu a Landing Page da Nexis.
-
-O projeto consiste em uma página de apresentação da empresa Nexis e dos
-serviços oferecidos pela empresa.
-
-
-==================================================
-ZURICH LIFE
-==================================================
-
-Tipo: Projeto profissional.
-
-Isaac participa do projeto Zurich Life durante sua atuação como
-Desenvolvedor de Software Júnior na ITpower.
-
-Sua atuação está relacionada ao desenvolvimento e manutenção de sistemas
-corporativos, automação de processos e melhorias operacionais.
-
-
-==================================================
 RODAR
 ==================================================
 
@@ -183,8 +158,6 @@ Os projetos registrados nesta base são:
 
 - Theodor AI.
 - Cantina Escolar.
-- Landing Page da Nexis.
-- Zurich Life.
 - Rodar.
 
 Componentes, tecnologias, cursos, estudos e interesses não devem ser

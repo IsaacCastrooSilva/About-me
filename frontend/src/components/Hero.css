@@ -17,3 +17,11 @@
   .hero-valor { font-size: var(--text-base); }
   .hero-arte { justify-self: center; max-width: 300px; }
 }
+
+/* Versão limpa: uma etiqueta discreta acima do nome, no lugar das duas linhas do topo. */
+.hero { grid-template-rows: 1fr; padding-top: var(--space-8); }
+.hero-etiqueta { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-5); padding: 6px 12px; border: 1px solid var(--borda); border-radius: 999px; font: var(--text-mono)/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-suave); }
+.hero-etiqueta::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--pixel-g); box-shadow: 0 0 6px var(--pixel-g); }
+.hero-etiqueta span { color: var(--borda-forte); }
+.hero-arte { max-width: 400px; }
+@media (max-width: 767px) { .hero { padding-top: var(--space-6); } .hero-arte { max-width: 260px; } }

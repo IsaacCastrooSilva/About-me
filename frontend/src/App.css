@@ -5,7 +5,7 @@
 .secao-topo { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 44px; margin-bottom: var(--space-8); padding-top: var(--space-4); border-top: 1px solid var(--borda-forte); }
 h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.045em; font-weight: 500; }
 .botao-primario, .botao-texto { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-3); min-height: 48px; padding: 13px 20px; font-size: var(--text-sm); line-height: 1.5; font-weight: 500; border: 0; border-radius: var(--radius-sm); transition: background var(--motion), color var(--motion), box-shadow var(--motion); }
-.botao-primario { background: var(--destaque); color: #080808; }
+.botao-primario { background: var(--destaque); color: var(--texto-inverso); }
 .botao-primario svg, .botao-texto svg { transition: transform var(--motion); }
 .botao-primario:hover:not(:disabled) { background: var(--destaque-hover); box-shadow: 3px 3px 0 var(--pixel-r), 6px 6px 0 var(--pixel-b); }
 .botao-primario:hover:not(:disabled) svg { transform: translate(2px, -2px); }
@@ -15,8 +15,8 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
 [data-reveal].reveal-pronto { opacity: 0; transform: translateY(18px); transition: opacity 600ms ease, transform 600ms ease; }
 [data-reveal].visivel { opacity: 1; transform: none; }
 
-/* Sobre: o xadrez vira duas faixas, sem disputar com o texto. */
-.xadrez { height: 32px; background-color: #000; background-image: repeating-conic-gradient(#000 0% 25%, var(--texto) 0% 50%); background-size: 32px 32px; }
+/* Sobre: o xadrez vira duas faixas finas, como textura, sem disputar com o texto. */
+.xadrez { height: 16px; background-color: var(--fundo); background-image: repeating-conic-gradient(var(--fundo) 0% 25%, var(--texto) 0% 50%); background-size: 16px 16px; opacity: .85; }
 .sobre-painel { display: grid; grid-template-columns: .8fr 1.2fr; align-items: start; gap: var(--space-8); padding: var(--space-8) 0; }
 .sobre-intro { min-width: 0; }
 .sobre-intro h2 { margin: 0 0 var(--space-5); }
@@ -27,19 +27,38 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
 .descricao-reserva { visibility: hidden; }
 .sobre-complemento { margin: 0 0 var(--space-7); color: var(--texto); font-size: var(--text-lg); line-height: 1.7; letter-spacing: -.01em; }
 .tecnologias-titulo { margin: 0 0 var(--space-3); font: 400 var(--text-mono)/1.6 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--texto-suave); }
-.tecnologias-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 0; font: 13px/1.8 var(--font-mono); color: var(--texto); }
-.tecnologias-lista li:not(:last-child)::after { content: '/'; margin-inline: 10px; color: var(--borda-forte); }
+/* Tecnologias citadas no texto ganham um sublinhado na cor delas. */
+.destaque { color: var(--texto); text-decoration: underline; text-decoration-color: var(--cor); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+/* Grupos de tecnologias: um cartão por tipo, cada um numa das cores do site. */
+.tecnologias-grupos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.tecnologias-grupo { padding: var(--space-4); border: 1px solid var(--borda); background: var(--cartao-fundo); transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion); }
+.tecnologias-grupo:hover { border-color: color-mix(in srgb, var(--cor) 60%, transparent); box-shadow: 3px 3px 0 var(--cor); transform: translate(-2px, -2px); }
+.tecnologias-grupo h4 { display: flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-3); font: 400 var(--text-mono)/1.6 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--texto-suave); }
+.tecnologias-grupo h4::before { content: ''; flex-shrink: 0; width: 6px; height: 6px; background: var(--cor); }
+.tecnologias-grupo ul { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.tecnologias-grupo li { padding: 4px 10px; border: 1px solid var(--borda); font: 13px/1.6 var(--font-mono); color: var(--texto); }
+/* Cartão de resumo em formato de arquivo JSON, com as cores de um editor de código. */
+.sobre-cartao { max-width: 400px; margin: var(--space-7) 0 0; border: 1px solid var(--borda); background: var(--cartao-fundo); transition: box-shadow var(--motion), transform var(--motion); }
+.sobre-cartao:hover { box-shadow: 3px 3px 0 var(--pixel-r), 6px 6px 0 var(--pixel-b); transform: translate(-2px, -2px); }
+.sobre-cartao figcaption { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border-bottom: 1px solid var(--borda); font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .04em; color: var(--texto-suave); }
+.sobre-cartao pre { margin: 0; padding: var(--space-4); overflow-x: auto; font: 12.5px/1.8 var(--font-mono); color: var(--texto-suave); }
+.json-chave { color: var(--pixel-g); }
+.json-texto { color: var(--texto); }
+.json-valor { color: var(--pixel-r); }
+.json-cursor { display: inline-block; width: .6em; height: 1.1em; margin-left: 6px; vertical-align: -2px; background: var(--pixel-g); animation: cursor-piscar 1s steps(1) infinite; }
 
 /* Chat */
 .historico-botao { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 8px 12px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: transparent; font-size: var(--text-xs); color: var(--texto-suave); transition: color var(--motion), border-color var(--motion); }
 .historico-botao svg { width: 16px; height: 16px; }
 .historico-botao:hover, .historico-botao[aria-expanded="true"] { color: var(--texto); border-color: var(--borda-forte); }
 .historico-contagem { min-width: 20px; padding: 0 5px; background: var(--controle); font: 10px/20px var(--font-mono); text-align: center; color: var(--texto); }
-.chat-painel { overflow-anchor: none; max-width: 760px; width: 100%; margin: 0 auto; }
+.chat-painel { overflow-anchor: none; max-width: 960px; width: 100%; margin: 0 auto; }
 .convite-conversa { margin-bottom: var(--space-6); }
 .convite-conversa h2 { text-wrap: balance; }
 .convite-conversa p { max-width: 52ch; margin: var(--space-4) 0 0; color: var(--texto-suave); font-size: var(--text-base); line-height: 1.7; }
 .convite-conversa.chat-iniciado { margin-bottom: var(--space-4); }
+/* Com a conversa iniciada, o título encolhe para o chat inteiro caber na tela. */
+.convite-conversa.chat-iniciado h2 { font-size: clamp(20px, 2.2vw, 26px); }
 .chat-iniciado h2 { font-size: var(--text-lg); letter-spacing: -.02em; color: var(--texto-suave); }
 
 .compositor { display: flex; align-items: flex-end; gap: var(--space-3); padding: 10px 10px 10px 18px; border: 1px solid var(--borda-forte); background: var(--superficie-suave); transition: border-color var(--motion); }
@@ -58,7 +77,7 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
 @keyframes tecla-acender { from { color: var(--pixel-g); text-shadow: 0 0 10px var(--pixel-g), 0 0 2px var(--pixel-g); } to { color: var(--texto); text-shadow: none; } }
 .cursor-bloco { position: relative; display: inline-block; width: 0; height: 1.25em; vertical-align: text-bottom; }
 .cursor-bloco::after { content: ''; position: absolute; inset: 0 auto 0 0; width: .6em; background: var(--pixel-g); box-shadow: 0 0 8px rgb(47 224 106 / 60%); animation: cursor-piscar 1s steps(1) infinite; }
-.enviar { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; padding: 0; border: 0; border-radius: var(--radius-sm); color: #080808; background: var(--destaque); transition: background var(--motion), color var(--motion); }
+.enviar { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; padding: 0; border: 0; border-radius: var(--radius-sm); color: var(--texto-inverso); background: var(--destaque); transition: background var(--motion), color var(--motion); }
 .enviar:hover:not(:disabled) { background: var(--destaque-hover); }
 .enviar:disabled { background: var(--controle); color: var(--texto-suave); }
 .campo-ajuda { margin: var(--space-3) 0 0; font: 10px/1.8 var(--font-mono); color: var(--texto-suave); text-align: right; }
@@ -73,7 +92,7 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
 .perguntas-basicas button:hover:not(:disabled) svg { color: var(--texto); transform: translateX(3px); }
 .perguntas-basicas button:disabled { opacity: .5; }
 
-.mensagens { overscroll-behavior-y: contain; max-height: min(580px, 64dvh); overflow-y: auto; overflow-x: hidden; margin-bottom: var(--space-5); padding: var(--space-2) var(--space-2) var(--space-2) 0; border-top: 1px solid var(--borda); scrollbar-width: thin; scrollbar-color: var(--borda-forte) transparent; }
+.mensagens { overflow-x: hidden; margin-bottom: var(--space-5); padding: var(--space-2) var(--space-2) var(--space-2) 0; border-top: 1px solid var(--borda); scrollbar-width: thin; scrollbar-color: var(--borda-forte) transparent; }
 .mensagem { padding: var(--space-5) 0; border-bottom: 1px solid var(--borda); font-size: var(--text-base); line-height: 1.75; overflow-wrap: anywhere; }
 .mensagem.user p { margin: 0; white-space: pre-wrap; color: var(--texto-suave); }
 .autor { display: flex; align-items: center; gap: 10px; margin-bottom: var(--space-2); font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--texto-suave); }
@@ -95,6 +114,15 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
 .markdown table { display: block; overflow-x: auto; border-collapse: collapse; }
 .markdown td, .markdown th { padding: var(--space-2); border: 1px solid var(--borda-forte); }
 .markdown img { max-width: 100%; }
+/* Títulos dentro das respostas do Theodor: discretos, para organizar o texto sem competir com os títulos do site. */
+.markdown :is(h1, h2, h3, h4) { margin: var(--space-5) 0 var(--space-2); font-size: var(--text-base); line-height: 1.4; letter-spacing: -.01em; font-weight: 600; color: var(--texto); }
+.markdown :is(h1, h2) { font-size: var(--text-lg); }
+.markdown li { margin-bottom: var(--space-1); }
+.markdown li > p { margin: 0; }
+.markdown li > :is(ul, ol) { margin: var(--space-1) 0 0; }
+.markdown th { text-align: left; font-weight: 600; background: var(--superficie); }
+.markdown blockquote { margin: 0 0 var(--space-3); padding-left: var(--space-4); border-left: 2px solid var(--borda-forte); color: var(--texto-suave); }
+.markdown hr { margin: var(--space-5) 0; border: 0; border-top: 1px solid var(--borda); }
 .mensagem.ai { animation: resposta-chegando 350ms ease both; }
 @keyframes resposta-chegando { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 /* Cursor de pixel no fim do texto enquanto a resposta é escrita. */
@@ -103,7 +131,7 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
 @keyframes cursor-piscar { 50% { opacity: 0; } }
 .continuacoes { padding: var(--space-5) 0 var(--space-2); animation: resposta-chegando 350ms ease both; }
 .continuacoes ul { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; margin: var(--space-3) 0 0; padding: 0; }
-.continuacoes button { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 40px; padding: 8px 12px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: rgb(5 5 5 / 70%); text-align: left; font-size: var(--text-sm); color: var(--texto-suave); transition: color var(--motion), border-color var(--motion); }
+.continuacoes button { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 40px; padding: 8px 12px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: var(--cartao-fundo); text-align: left; font-size: var(--text-sm); color: var(--texto-suave); transition: color var(--motion), border-color var(--motion); }
 .continuacoes button svg { width: 15px; height: 15px; flex-shrink: 0; transition: transform var(--motion); }
 .continuacoes button:hover { color: var(--texto); border-color: var(--texto); }
 .continuacoes button:hover svg { transform: translateX(3px); }
@@ -154,9 +182,11 @@ h2 { margin: 0; font-size: var(--text-h2); line-height: 1.12; letter-spacing: -.
   .portfolio { padding-top: 68px; }
   .secao { padding-block: var(--space-4) var(--space-9); }
   .secao-topo { margin-bottom: var(--space-6); }
-  .xadrez { height: 24px; background-size: 24px 24px; }
+  .xadrez { height: 12px; background-size: 12px 12px; }
   .sobre-painel { grid-template-columns: 1fr; gap: var(--space-5); padding: var(--space-6) 0; }
   .sobre-nota { max-width: none; }
+  .sobre-cartao { max-width: none; margin-top: var(--space-5); }
+  .sobre-cartao pre { white-space: pre-wrap; }
   .descricao-digitada, .sobre-complemento { font-size: var(--text-base); }
   .compositor { padding-left: 14px; }
   .campo-ajuda { text-align: left; }

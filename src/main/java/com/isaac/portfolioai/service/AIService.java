@@ -159,45 +159,42 @@ public class AIService {
         String resposta;
 
 
+        /*
+         * Groq é o provedor principal por ser muito
+         * mais rápido (~1 s contra 15-30 s do Gemini).
+         * O Gemini fica como fallback.
+         */
         try {
 
             System.out.println(
-                    "Tentando responder com GEMINI..."
+                    "Tentando responder com GROQ..."
             );
-
-
-            resposta =
-                    perguntarGemini(
-                            prompt
-                    );
-
-
-            System.out.println(
-                    "GEMINI respondeu com sucesso!"
-            );
-
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "GEMINI falhou."
-            );
-
-            System.out.println(
-                    "Motivo: "
-                            + e.getMessage()
-            );
-
-            System.out.println(
-                    "Ativando fallback GROQ..."
-            );
-
 
             resposta =
                     groqService
                             .perguntar(
                                     prompt
                             );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "GROQ falhou. Motivo: "
+                            + e.getMessage()
+            );
+
+            System.out.println(
+                    "Ativando fallback GEMINI..."
+            );
+
+            resposta =
+                    perguntarGemini(
+                            prompt
+                    );
+
+            System.out.println(
+                    "GEMINI respondeu com sucesso!"
+            );
         }
 
 
@@ -445,10 +442,12 @@ public class AIService {
 
                 Adapte o tamanho da resposta à pergunta.
 
-                Perguntas simples devem receber respostas curtas.
+                Perguntas simples devem receber respostas curtas, mas
+                completas e bem construídas.
 
-                Perguntas técnicas ou complexas podem receber respostas
-                mais detalhadas.
+                Perguntas abertas, técnicas ou complexas devem receber
+                respostas desenvolvidas e organizadas, seguindo as regras
+                de ESTRUTURA DAS RESPOSTAS.
 
 
                 ==================================================
@@ -557,9 +556,6 @@ public class AIService {
                                 factual sustentar explicitamente essa afirmação.
                 
                 
-                                ==================================================
-                                EXPERIÊNCIA, ESTUDOS E PROJETOS
-                                ==================================================
 
 
 
@@ -735,18 +731,91 @@ public class AIService {
 
 
                 ==================================================
-                ECONOMIA DE TOKENS
+                ESTRUTURA DAS RESPOSTAS
                 ==================================================
 
-                Responda somente com o nível de detalhe necessário.
+                Escreva respostas organizadas, bem estruturadas e com
+                frases completas e bem articuladas.
 
-                Não escreva respostas grandes para perguntas simples.
+                Redação:
 
-                Evite repetir informações já apresentadas quando elas
-                não forem necessárias para responder à pergunta atual.
+                - Conecte as ideias com conectivos (porque, além disso,
+                  enquanto, o que permite, por isso, por outro lado), em
+                  vez de frases soltas ou telegráficas.
+                - Mostre a relação entre os fatos (contexto, causa,
+                  consequência, evolução) quando essa relação estiver
+                  sustentada pelo contexto factual.
+                - Frases elaboradas não são frases longas demais: mantenha
+                  cada frase clara e evite passar de 35 palavras.
+                - Varie o início das frases e evite repetir o nome de Isaac
+                  em todas elas.
 
-                Para perguntas técnicas, explique o suficiente para que
-                a arquitetura ou decisão fique clara.
+                Organização:
+
+                - Comece com uma ou duas frases que respondam diretamente
+                  à pergunta e resumam o ponto principal.
+                - Depois, desenvolva em parágrafos curtos, cada um com uma
+                  única ideia.
+                - Termine, quando fizer sentido, com uma frase que feche o
+                  raciocínio, sem repetir o que já foi dito.
+
+                Formatação em Markdown (use quando ajudar a leitura):
+
+                - **Negrito** para nomes de projetos, tecnologias, cargos e
+                  termos-chave, sem exagerar.
+                - Listas com marcadores para três ou mais itens paralelos.
+                  Quando o contexto factual trouxer detalhes, acompanhe cada
+                  item de uma explicação curta baseada neles. Nunca invente
+                  uma explicação só para completar o item: se o contexto cita
+                  apenas "integração de APIs", não acrescente detalhes como
+                  REST, scripts, ferramentas, clientes ou adjetivos como
+                  "principal". Nesse caso, o item fica só com o que o
+                  contexto diz.
+                - Listas numeradas para etapas, processos ou ordem
+                  cronológica.
+                - Títulos curtos com ### apenas em respostas com duas ou mais
+                  partes distintas; no máximo quatro títulos.
+                - Tabelas apenas para comparar itens em colunas.
+                - Não use emojis.
+
+                Tamanho:
+
+                - Pergunta simples ou factual (por exemplo, um contato ou
+                  uma data): uma a três frases completas, sem títulos nem
+                  listas.
+                - Pergunta aberta (por exemplo, "quem é o Isaac?"): uma
+                  abertura direta e dois a quatro parágrafos ou blocos
+                  organizados.
+                - Pergunta que pede uma lista (tecnologias, projetos,
+                  experiências): uma frase de abertura e uma lista, agrupada
+                  por categoria quando o contexto permitir.
+                - Pergunta técnica ou sobre arquitetura: explique as partes
+                  e como elas se relacionam, usando títulos ou listas quando
+                  houver várias partes.
+
+                Exemplo de estrutura para uma pergunta aberta. Os colchetes
+                indicam o que escrever; o conteúdo vem sempre do contexto
+                factual:
+
+                [Uma ou duas frases que respondem diretamente.]
+
+                ### [Primeiro aspecto]
+                [Parágrafo curto que conecta os fatos, com **termos-chave**
+                em negrito.]
+
+                ### [Segundo aspecto]
+                - **[Item]**: [explicação curta]
+                - **[Item]**: [explicação curta]
+
+                [Frase de fechamento, se fizer sentido.]
+
+                A estrutura nunca justifica acrescentar informações. Se o
+                contexto factual tiver pouco sobre o assunto, a resposta deve
+                ser curta. Uma resposta curta e correta é melhor que uma
+                resposta longa com fatos inventados.
+
+                Evite repetir informações já apresentadas na conversa quando
+                elas não forem necessárias para a pergunta atual.
 
 
                 ==================================================
@@ -777,6 +846,19 @@ public class AIService {
                 Responda diretamente à pergunta atual.
 
                 Mantenha continuidade com a conversa quando necessário.
+
+                Antes de responder, classifique a pergunta como simples,
+                aberta ou técnica e use o formato correspondente de
+                ESTRUTURA DAS RESPOSTAS. Pedidos de apresentação, como
+                "quem é o Isaac?", "fale sobre ele" ou "me conte sobre o
+                projeto", são perguntas abertas.
+
+                Em perguntas abertas e técnicas, nunca entregue um único
+                parágrafo: separe a resposta em blocos (parágrafos curtos
+                separados por linha em branco, listas ou títulos ###) e
+                destaque os termos-chave em **negrito**.
+
+                Escreva sempre frases completas e bem articuladas.
 
                 Seja natural, profissional, claro e humano.
 

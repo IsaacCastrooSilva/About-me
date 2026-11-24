@@ -27,7 +27,36 @@
   --container: 1200px; --gutter: 32px; --motion: 220ms ease;
   font-family: var(--font-body); color: var(--texto); background: var(--fundo);
   font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; color-scheme: dark;
+  /* Cores que mudam entre os modos escuro e claro. */
+  --texto-inverso: #080808;
+  --cartao-fundo: rgb(12 12 12 / 80%);
+  --nav-vidro: rgb(22 22 26 / 55%); --nav-vidro-forte: rgb(22 22 26 / 70%);
+  --nav-borda: rgb(255 255 255 / 9%); --nav-texto: rgb(255 255 255 / 55%);
+  --nav-texto-forte: #fff; --nav-ativo: rgb(255 255 255 / 11%);
 }
+/* Modo claro: fundo papel, texto quase preto, e as três cores um pouco mais escuras para ter contraste. */
+:root[data-theme="light"] {
+  --fundo: #f5f5f2; --texto: #121212; --texto-suave: #5a5a5a;
+  --superficie: #ffffff; --superficie-suave: #fbfbf9; --superficie-hover: #ebebe8;
+  --controle: #e4e4e1; --controle-hover: #d6d6d3;
+  --borda: #0000001a; --borda-forte: #8c8c8c;
+  --destaque: #121212; --destaque-hover: #000000; --accent-soft: #0000000d;
+  --pixel-r: #e0302f; --pixel-g: #179a4b; --pixel-b: #3557e0;
+  --shadow-panel: 0 20px 60px #0000001f;
+  --texto-inverso: #f5f5f2;
+  --cartao-fundo: rgb(255 255 255 / 82%);
+  --nav-vidro: rgb(255 255 255 / 62%); --nav-vidro-forte: rgb(255 255 255 / 80%);
+  --nav-borda: rgb(0 0 0 / 10%); --nav-texto: rgb(0 0 0 / 55%);
+  --nav-texto-forte: #121212; --nav-ativo: rgb(0 0 0 / 7%);
+  color-scheme: light;
+}
+/* No modo claro, o filtro #olho-sem-preto (no Hero.jsx) torna o fundo preto do GIF transparente e mantém as cores originais dos pixels. */
+:root[data-theme="light"] .hero-arte { filter: url(#olho-sem-preto) saturate(1.3) brightness(.9); }
+:root[data-theme="light"] .hero-arte img { mix-blend-mode: normal; }
+/* Botão de tema: sol no escuro, lua no claro. */
+.tema-botao { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--nav-borda); border-radius: 999px; background: var(--nav-vidro); backdrop-filter: blur(20px) saturate(170%); -webkit-backdrop-filter: blur(20px) saturate(170%); color: var(--nav-texto-forte); transition: transform 200ms ease; }
+.tema-botao:hover { transform: rotate(20deg); }
+.tema-botao svg { width: 18px; height: 18px; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 body { margin: 0; min-width: 320px; }
@@ -36,7 +65,7 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 :where(button, a, textarea, input, select):focus-visible { outline: 2px solid var(--destaque); outline-offset: 3px; }
-::selection { background: var(--destaque); color: #050505; }
+::selection { background: var(--destaque); color: var(--fundo); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--destaque); color: #050505; transform: translateY(-180%); }
 .skip-link:focus { transform: translateY(0); }
@@ -53,3 +82,7 @@ button:disabled { cursor: not-allowed; }
 .rotulo { display: inline-flex; align-items: center; gap: 10px; margin: 0; font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--texto-suave); }
 @media (max-width: 767px) { :root { --gutter: 20px; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* No computador, o site aparece como no zoom de 90% do navegador: tudo um pouco menor e mais arejado.
+   No celular fica em 100%, para os textos não ficarem pequenos demais. */
+@media (min-width: 1024px) { html { zoom: .9; } }

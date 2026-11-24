@@ -2,8 +2,10 @@ package com.isaac.portfolioai.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -18,17 +20,26 @@ public class GroqService {
     ) {
         this.apiKey = apiKey;
 
+        /*
+         * Groq é o provedor principal. O timeout garante que,
+         * se ela travar, o fallback Gemini assuma rapidamente.
+         */
+        SimpleClientHttpRequestFactory requestFactory =
+                new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(5));
+        requestFactory.setReadTimeout(Duration.ofSeconds(20));
+
         this.restClient = RestClient.builder()
                 .baseUrl("https://api.groq.com/openai/v1")
+                .requestFactory(requestFactory)
                 .build();
     }
 
     public String perguntar(String prompt) {
 
-        System.out.println("Usando GROQ como fallback...");
-
         Map<String, Object> body = Map.of(
                 "model", "openai/gpt-oss-120b",
+                "reasoning_effort", "medium",
                 "messages", List.of(
                         Map.of(
                                 "role", "user",

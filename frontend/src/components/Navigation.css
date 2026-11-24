@@ -1,33 +1,73 @@
-.site-header { position: fixed; inset: 0 0 auto; z-index: 30; background: rgb(5 5 5 / 86%); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid var(--borda); }
-/* Progresso de leitura da página, nas três cores do olho. */
-.site-header::after { content: ''; position: absolute; left: 0; bottom: -1px; width: calc(var(--progresso, 0) * 100%); height: 2px; background: linear-gradient(90deg, var(--pixel-r) 0 33.4%, var(--pixel-g) 33.4% 66.7%, var(--pixel-b) 66.7%); pointer-events: none; }
-.nav-container { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); max-width: var(--container); min-height: 72px; margin: auto; padding-inline: var(--gutter); transition: min-height var(--motion); }
-.compacto .nav-container { min-height: 60px; }
-.nav-marca { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: var(--text-sm); font-weight: 500; letter-spacing: -.01em; }
-.nav-panel { display: flex; align-items: center; gap: var(--space-1); }
-/* Links em mono, como comandos. O item da seção atual ganha um ">" verde. */
-.nav-panel a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 12px; border-radius: var(--radius-sm); font: 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-suave); transition: color var(--motion), background var(--motion), border-color var(--motion); }
-.nav-panel a svg { margin-left: var(--space-2); }
-.nav-panel a:hover { color: var(--texto); }
-.nav-panel a[aria-current] { color: var(--texto); }
-.nav-marcador { display: inline-block; width: 0; overflow: hidden; color: var(--pixel-g); transition: width 200ms steps(3); }
-.nav-panel a:hover .nav-marcador, .nav-panel a[aria-current] .nav-marcador { width: 1.6ch; }
-.nav-panel a:hover:not([aria-current]) .nav-marcador { color: var(--texto-suave); }
+/* Cabeçalho limpo: o nome à esquerda, solto, e os links numa cápsula
+   pequena de vidro, centralizada no topo. Cada link tem um pontinho;
+   o da seção atual fica numa bolha de vidro mais clara. */
+.site-header { position: fixed; inset: 0 0 auto; z-index: 30; padding-top: 14px; pointer-events: none; }
+.nav-container { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); max-width: var(--container); min-height: 48px; margin: 0 auto; padding-inline: var(--gutter); }
+.nav-container > * { pointer-events: auto; }
+
+.nav-marca { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font: 600 14px/1 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; letter-spacing: -.02em; color: rgb(255 255 255 / 88%); text-shadow: 0 0 12px var(--fundo); }
+
+/* A cápsula de vidro: escura, translúcida, borda fina e desfoque forte,
+   para o fundo animado passar atrás dela borrado. */
+.nav-panel {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 2px; padding: 4px;
+  border: 1px solid var(--nav-borda); border-radius: 999px;
+  background: var(--nav-vidro);
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 8px 28px rgb(0 0 0 / 35%);
+}
+/* Progresso de leitura nas três cores do olho, na base da cápsula. */
+.nav-panel::after { content: ''; position: absolute; left: 18px; bottom: -1px; width: calc(var(--progresso, 0) * (100% - 36px)); height: 2px; background: linear-gradient(90deg, var(--pixel-r) 0 33.4%, var(--pixel-g) 33.4% 66.7%, var(--pixel-b) 66.7%); pointer-events: none; }
+
+.nav-panel a {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 30px; padding: 0 12px; border-radius: 999px;
+  font: 500 12px/1 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif; letter-spacing: 0;
+  color: var(--nav-texto); white-space: nowrap;
+  transition: color 200ms ease, background 250ms ease, box-shadow 250ms ease;
+}
+/* Cada link tem um pontinho numa das três cores do olho; o de "Vamos conversar"
+   leva as três. O pontinho da seção atual fica aceso, com brilho. */
+.nav-panel a:nth-child(1) { --cor-ponto: var(--pixel-r); }
+.nav-panel a:nth-child(2) { --cor-ponto: var(--pixel-g); }
+.nav-panel a:nth-child(3) { --cor-ponto: var(--pixel-b); }
+.nav-panel a:nth-child(4) { --cor-ponto: var(--pixel-g); }
+.nav-panel a::before { content: ''; flex-shrink: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--cor-ponto); opacity: .5; transition: opacity 200ms ease, box-shadow 200ms ease; }
+.nav-panel a:nth-child(4)::before { width: 11px; border-radius: 3px; background: linear-gradient(90deg, var(--pixel-r) 0 33.4%, var(--pixel-g) 33.4% 66.7%, var(--pixel-b) 66.7%); }
+.nav-panel a:hover::before { opacity: .85; }
+.nav-panel a:hover { color: var(--nav-texto-forte); }
+.nav-panel a[aria-current] {
+  color: var(--nav-texto-forte);
+  background: var(--nav-ativo);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), 0 1px 4px rgb(0 0 0 / 25%);
+}
+.nav-panel a[aria-current]::before { opacity: 1; box-shadow: 0 0 6px var(--cor-ponto); }
+.nav-panel a svg { width: 12px; height: 12px; margin-left: -2px; opacity: .7; }
+.nav-marcador { display: none; }
 .nav-toggle { display: none; }
+
+/* Ao rolar a página, o nome sai de cena em degraus de pixel e só a cápsula fica no topo. */
+.nav-marca { transition: opacity 240ms steps(4), transform 240ms steps(4), visibility 240ms; }
 @media (min-width: 768px) {
-  .nav-panel a:last-child { margin-left: var(--space-3); min-height: 40px; padding-inline: 14px; border: 1px solid var(--borda-forte); color: var(--texto); }
-  .nav-panel a:last-child:hover { border-color: var(--pixel-g); background: var(--accent-soft); }
+  .compacto .nav-marca { opacity: 0; transform: translateY(-10px); visibility: hidden; pointer-events: none; }
+}
+/* Telas menores: cápsula mais enxuta, sem os pontinhos, para caber sem poluir. */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .nav-panel a { padding-inline: 10px; }
+  .nav-panel a::before { display: none; }
 }
 @media (max-width: 767px) {
-  .nav-container, .compacto .nav-container { min-height: 68px; }
-  .nav-toggle { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--borda); border-radius: var(--radius-sm); background: transparent; color: var(--texto); }
-  .nav-panel { display: none; position: absolute; top: 100%; left: 0; right: 0; padding: var(--space-2) var(--gutter) var(--space-4); border-bottom: 1px solid var(--borda); background: var(--fundo); box-shadow: var(--shadow-panel); }
-  .nav-panel.aberto { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
-  .nav-panel a { justify-content: flex-start; min-height: 52px; padding-inline: 0; border-bottom: 1px solid var(--borda); border-radius: 0; font-size: 13px; animation: nav-linha 240ms steps(4) both; }
-  .nav-panel a:nth-child(2) { animation-delay: 60ms; }
-  .nav-panel a:nth-child(3) { animation-delay: 120ms; }
-  .nav-panel a:nth-child(4) { animation-delay: 180ms; }
-  .nav-panel a:last-child { border-bottom: 0; }
+  .site-header { padding-top: 10px; }
+  .nav-container { padding-inline: 16px; }
+  .nav-toggle { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--nav-borda); border-radius: 999px; background: var(--nav-vidro); backdrop-filter: blur(20px) saturate(170%); -webkit-backdrop-filter: blur(20px) saturate(170%); color: var(--nav-texto-forte); }
+  .nav-toggle svg { width: 18px; height: 18px; }
+  .nav-panel { display: none; left: 16px; right: 16px; top: calc(100% + 8px); transform: none; padding: 6px; border-radius: 22px; background: var(--nav-vidro-forte); }
+  .nav-panel.aberto { display: flex; flex-direction: column; align-items: stretch; gap: 2px; animation: nav-abrir 260ms cubic-bezier(.2, .9, .3, 1.1) both; transform-origin: top right; }
+  .nav-panel a { min-height: 46px; padding-inline: 14px; border-radius: 16px; font-size: 15px; }
   .nav-panel a svg { margin-left: auto; }
+  .nav-panel::after { display: none; }
 }
-@keyframes nav-linha { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@keyframes nav-abrir { from { opacity: 0; transform: scale(.94) translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .nav-panel.aberto { animation: none; } }

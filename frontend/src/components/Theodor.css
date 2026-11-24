@@ -3,19 +3,83 @@
 .theodor-copy h2 { margin: 0 0 var(--space-5); text-wrap: balance; }
 .theodor-descricao { max-width: 44ch; margin: 0 0 var(--space-6); color: var(--texto-suave); font-size: var(--text-base); line-height: 1.75; }
 .theodor-copy .botao-primario:disabled { opacity: .5; cursor: wait; }
-.theodor-funcionamento { min-width: 0; }
+
+/* --no: tamanho do quadrado numerado de cada etapa; o trilho passa pelo centro dele. */
+.theodor-funcionamento { --no: 40px; min-width: 0; }
 .theodor-subtitulo { margin: 0 0 var(--space-4); font: 400 var(--text-mono)/1.6 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--texto-suave); }
-.theodor-etapas { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--borda-forte); }
-.theodor-etapas li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: var(--space-4); padding: var(--space-5) 0; border-bottom: 1px solid var(--borda); }
-.etapa-numero { padding-top: 5px; font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .08em; color: var(--texto-suave); }
-.theodor-etapas h4 { margin: 0 0 6px; font-size: var(--text-lg); line-height: 1.4; letter-spacing: -.02em; font-weight: 500; }
-.theodor-etapas p { max-width: 54ch; margin: 0; color: var(--texto-suave); font-size: var(--text-sm); line-height: 1.7; }
-.theodor-stack { display: flex; flex-wrap: wrap; gap: 6px 0; list-style: none; margin: var(--space-5) 0 0; padding: 0; font: var(--text-mono)/1.8 var(--font-mono); color: var(--texto-suave); }
-.theodor-stack li:not(:last-child)::after { content: '/'; margin-inline: 10px; color: var(--borda-forte); }
+
+/* Pontas do fluxo: de onde a pergunta vem e para onde a resposta vai. */
+.fluxo-ponta { display: flex; align-items: center; gap: var(--space-3); margin: 0; padding-left: calc(var(--no) / 2 - 4px); font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-suave); }
+.fluxo-ponta span { color: var(--pixel-g); }
+
+/* Trilho vertical nas três cores ligando as etapas, com um "pacote" de dados descendo por ele. */
+.theodor-etapas { position: relative; display: grid; gap: var(--space-3); list-style: none; margin: var(--space-3) 0; padding: 0; }
+.theodor-etapas::before { content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--no) / 2 - .5px); width: 1px; background: linear-gradient(var(--pixel-r), var(--pixel-g), var(--pixel-b), var(--texto)); opacity: .4; }
+.theodor-etapas::after { content: ''; position: absolute; top: 0; left: calc(var(--no) / 2 - 3.5px); z-index: 2; width: 7px; height: 7px; background: var(--pixel-r); animation: pacote 6s linear infinite; }
+@keyframes pacote {
+  0% { top: 0; background: var(--pixel-r); box-shadow: 0 0 10px var(--pixel-r); }
+  33% { background: var(--pixel-g); box-shadow: 0 0 10px var(--pixel-g); }
+  66% { background: var(--pixel-b); box-shadow: 0 0 10px var(--pixel-b); }
+  100% { top: calc(100% - 7px); background: var(--texto); box-shadow: 0 0 10px var(--texto); }
+}
+
+.theodor-etapas > li { position: relative; display: grid; grid-template-columns: var(--no) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+
+/* Quadrado numerado: acende na cor da etapa quando o pacote passa por ele. */
+.etapa-no { position: relative; z-index: 1; display: grid; place-items: center; width: var(--no); height: var(--no); margin-top: 6px; border: 1px solid color-mix(in srgb, var(--cor) 55%, transparent); background: var(--fundo); box-shadow: 0 0 0 4px var(--fundo); font: 500 var(--text-mono)/1 var(--font-mono); letter-spacing: .04em; color: var(--cor); animation: etapa-acender 6s ease-in-out infinite; animation-delay: calc(var(--i) * 1.5s); }
+@keyframes etapa-acender {
+  0%, 25%, 100% { background: var(--fundo); box-shadow: 0 0 0 4px var(--fundo); }
+  12% { background: color-mix(in srgb, var(--cor) 16%, var(--fundo)); box-shadow: 0 0 0 4px var(--fundo), 0 0 18px color-mix(in srgb, var(--cor) 55%, transparent); }
+}
+.etapa-final .etapa-no { border-color: var(--borda-forte); }
+
+/* Cartão da etapa: no hover ganha a sombra em pixel do site, na cor da etapa. */
+.etapa-cartao { min-width: 0; padding: var(--space-4) var(--space-5); border: 1px solid var(--borda); background: var(--cartao-fundo); transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion); }
+.theodor-etapas > li:hover .etapa-cartao { border-color: color-mix(in srgb, var(--cor) 60%, transparent); box-shadow: 3px 3px 0 var(--cor); transform: translate(-2px, -2px); }
+.theodor-etapas > .etapa-final:hover .etapa-cartao { border-color: var(--borda-forte); box-shadow: 3px 3px 0 var(--pixel-r), 6px 6px 0 var(--pixel-b); }
+.etapa-cartao h4 { display: flex; align-items: center; gap: var(--space-3); margin: 0 0 6px; font-size: var(--text-lg); line-height: 1.4; letter-spacing: -.02em; font-weight: 500; }
+.etapa-cartao h4 svg { flex-shrink: 0; color: var(--cor); }
+.etapa-cartao p { max-width: 54ch; margin: 0; color: var(--texto-suave); font-size: var(--text-sm); line-height: 1.7; }
+
+/* Tecnologias de cada etapa. */
+.etapa-tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: var(--space-3) 0 0; padding: 0; }
+.etapa-tags li { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid var(--borda); font: var(--text-mono)/1.6 var(--font-mono); color: var(--texto-suave); }
+.etapa-tags li::before { content: ''; flex-shrink: 0; width: 5px; height: 5px; background: var(--cor); }
+.etapa-final .etapa-tags li:first-child::before { background: var(--pixel-g); }
+.etapa-final .etapa-tags li:last-child::before { background: var(--pixel-b); }
+
+/* Stack completa, como uma linha de terminal. */
+.theodor-stack { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; list-style: none; margin: var(--space-6) 0 0; padding: var(--space-4) 0 0; border-top: 1px solid var(--borda); font: var(--text-mono)/1.6 var(--font-mono); color: var(--texto-suave); }
+.theodor-stack::before { content: 'stack ›'; margin-right: 4px; letter-spacing: .08em; text-transform: uppercase; color: var(--pixel-g); }
+.theodor-stack li { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--borda); background: var(--cartao-fundo); transition: color var(--motion), border-color var(--motion); }
+.theodor-stack li::before { content: ''; flex-shrink: 0; width: 5px; height: 5px; background: var(--pixel-r); }
+.theodor-stack li:nth-child(3n + 2)::before { background: var(--pixel-g); }
+.theodor-stack li:nth-child(3n)::before { background: var(--pixel-b); }
+.theodor-stack li:hover { color: var(--texto); border-color: var(--borda-forte); }
+
+@media (prefers-reduced-motion: reduce) { .theodor-etapas::after { display: none; } }
 @media (max-width: 900px) {
   .theodor-grade { grid-template-columns: 1fr; gap: var(--space-7); }
 }
 @media (max-width: 480px) {
   .theodor-copy .botao-primario { width: 100%; justify-content: space-between; }
-  .theodor-etapas li { grid-template-columns: 32px minmax(0, 1fr); gap: var(--space-3); }
+  .theodor-funcionamento { --no: 32px; }
+  .theodor-etapas > li { gap: var(--space-3); }
+  .etapa-cartao { padding: var(--space-4); }
 }
+
+/* Coluna da esquerda acompanha a rolagem enquanto as etapas passam. */
+@media (min-width: 901px) { .theodor-copy { position: sticky; top: 110px; } }
+
+/* Prévia de conversa: mostra na prática o que o Theodor responde. */
+.theodor-previa { margin: var(--space-7) 0 0; max-width: 440px; border: 1px solid var(--borda); background: var(--cartao-fundo); transition: box-shadow var(--motion), transform var(--motion); }
+.theodor-previa:hover { box-shadow: 3px 3px 0 var(--pixel-g), 6px 6px 0 var(--pixel-b); transform: translate(-2px, -2px); }
+.theodor-previa figcaption { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border-bottom: 1px solid var(--borda); font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-suave); }
+.previa-pergunta { margin: 0; padding: var(--space-4) var(--space-4) 0; font: 13px/1.6 var(--font-mono); color: var(--texto); }
+.previa-pergunta span { color: var(--pixel-g); }
+.previa-resposta { margin: var(--space-3) var(--space-4) 0; padding-left: var(--space-3); border-left: 2px solid var(--pixel-b); font-size: var(--text-sm); line-height: 1.7; color: var(--texto-suave); }
+.previa-resposta strong { display: block; margin-bottom: 2px; font: 500 var(--text-mono)/1.6 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--texto); }
+.previa-resposta b { font-weight: 600; color: var(--texto); }
+.previa-acao { display: inline-flex; align-items: center; gap: var(--space-2); margin: var(--space-4); padding: 0; border: 0; background: none; font: var(--text-mono)/1.6 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--pixel-g); cursor: pointer; }
+.previa-acao:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 4px; }
+.previa-acao:disabled { opacity: .5; cursor: wait; }
