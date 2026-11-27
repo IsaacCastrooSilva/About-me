@@ -29,9 +29,13 @@ public class IntentService {
             return "CONTATO";
         }
 
-        if (temPalavra(palavras, "projeto", "projetos", "theodor")
+        // Nomes de projetos vêm antes de tecnologias: "tecnologias do
+        // Desk-Friends" deve buscar no projeto, não na lista geral.
+        if (temPalavra(palavras, "projeto", "projetos", "theodor",
+                "cantina", "deskfriends")
                 || temTrecho(texto, "portfolio ai", "portfolioai",
-                "portfolio ia", "theodorai", "theodoria")) {
+                "portfolio ia", "theodorai", "theodoria",
+                "desk-friends", "desk friends", "agents deck")) {
             return "PROJETOS";
         }
 

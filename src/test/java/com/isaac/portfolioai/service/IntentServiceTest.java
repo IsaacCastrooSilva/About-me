@@ -22,7 +22,13 @@ class IntentServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Quais projetos o Isaac desenvolveu?", "Como funciona o Theodor AI?"})
+    @ValueSource(strings = {
+            "Quais projetos o Isaac desenvolveu?",
+            "Como funciona o Theodor AI?",
+            "Quais tecnologias o Isaac usou no Desk-Friends?",
+            "Que linguagem tem o desk friends?",
+            "Qual stack da cantina escolar?"
+    })
     void preservaCategoriaDeProjetos(String pergunta) {
         assertEquals("PROJETOS", service.identificarCategoria(pergunta));
     }
