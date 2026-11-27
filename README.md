@@ -1,161 +1,178 @@
-# About Me
+# About Me · Portfólio com o Theodor AI
 
-Portfólio com o Theodor AI, um chat de inteligência artificial. O backend Java 21 com Spring
-Boot, Maven, JPA e H2 fica na raiz; o frontend React/Vite fica em `frontend/`.
+Meu portfólio pessoal, com uma IA que eu construí para responder perguntas sobre
+mim: trajetória, projetos, tecnologias e curiosidades.
 
-## Executar o projeto completo
+**🔗 Acesse:** https://about-me-seven-lovat.vercel.app
 
-Preencha as chaves somente no `.env` da raiz. No primeiro terminal PowerShell:
+O **Theodor AI** responde com base em uma base de conhecimento escrita por mim e
+segue regras para não inventar o que não sabe. Por trás do chat há um backend em
+Java com Spring Boot, busca semântica (RAG), memória de conversa e dois
+provedores de modelos de linguagem.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\backend.ps1 iniciar
+## Funcionalidades
+
+- **Chat com IA sobre mim**, com respostas em Markdown e sugestões de perguntas
+  para continuar a conversa.
+- **RAG próprio:** a base de conhecimento é dividida em trechos, transformada em
+  embeddings e consultada por similaridade de cosseno antes de cada resposta.
+- **Memória de conversa:** cada conversa tem um identificador, o histórico fica
+  salvo no banco e as conversas longas são resumidas para controlar o contexto.
+- **Dois provedores de IA:** o Groq responde primeiro, por ser mais rápido, e o
+  Gemini assume se ele falhar.
+- **Proteções da API pública:** limite de perguntas por minuto, por visitante e
+  no total, validação do tamanho da pergunta e CORS restrito ao site.
+- **Interface com identidade em pixel art:** fundo animado de pixels, chat em
+  estilo terminal, modo claro e escuro e páginas próprias para 404, 500 e falta
+  de conexão.
+
+## Como funciona
+
+```mermaid
+flowchart LR
+    U[Visitante] --> F[Frontend React<br/>Vercel]
+    F -->|POST /api/chat| B[API Spring Boot<br/>Render]
+    B --> R[RAG<br/>busca semântica]
+    R --> K[(Base de<br/>conhecimento)]
+    B --> M[(Memória de conversa<br/>PostgreSQL · Neon)]
+    B --> L{LLM}
+    L -->|principal| G[Groq]
+    L -->|fallback| GM[Gemini]
 ```
 
-Em outro terminal, a partir da raiz, com Node.js/npm instalados:
+1. A pergunta chega à API com o identificador da conversa.
+2. O RAG busca os trechos da base de conhecimento mais parecidos com a pergunta,
+   usando também as perguntas anteriores como contexto.
+3. O histórico recente e o resumo da conversa são carregados do banco.
+4. O modelo de linguagem recebe os trechos e o histórico e gera a resposta,
+   que é salva e devolvida ao site.
 
-```powershell
-cd frontend
-npm.cmd ci
-npm.cmd run dev
-```
+## Tecnologias
 
-Abra a URL exibida pelo Vite. O frontend usa por padrão
-`http://localhost:8080/api/chat`. Para mudar o endereço, copie
-`frontend/.env.example` para `frontend/.env` e ajuste `VITE_CHAT_API_URL`.
-As chaves Gemini e Groq pertencem exclusivamente ao backend.
-
-Para validar o frontend, execute `npm.cmd run build` e `npm.cmd run lint`
-na pasta `frontend`.
-
-## Usar no VS Code
-
-1. Abra esta pasta, que contém este README, o `pom.xml` e o `src` principal.
-   A subpasta `portfolioai/` contém outro projeto inicial com o mesmo nome;
-   ela foi preservada e excluída da importação Java/Maven do workspace.
-2. Use um JDK 21 e as extensões recomendadas: **Extension Pack for Java**
-   e **Spring Boot Extension Pack**. Não precisa instalar Maven separadamente:
-   o projeto inclui o Maven Wrapper.
-3. O arquivo `.env` local já foi preparado. Em uma nova cópia do projeto,
-   copie `.env.example` para `.env`. Preencha `GEMINI_API_KEY` e
-   `GROQ_API_KEY` com suas chaves. Esse arquivo não deve ser versionado.
-4. Aguarde a importação Java/Maven. Pressione **F5** e selecione
-   **PortfolioAI - Backend**. Para executar sem depuração, use **Ctrl+F5**.
-   Para parar a depuração, use **Shift+F5**.
-
-A configuração F5 carrega `.env` e executa a aplicação a partir da raiz,
-mantendo o banco H2 e o cache em `data/`. A porta padrão é `8080` e o endpoint
-de chat é `POST /api/chat`. A inicialização pode chamar a API Gemini para
-gerar embeddings que ainda não estejam no cache.
-
-## Compilar e testar
-
-Para usar pelo terminal PowerShell, na pasta principal:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\backend.ps1 iniciar
-powershell -ExecutionPolicy Bypass -File .\backend.ps1 compilar
-powershell -ExecutionPolicy Bypass -File .\backend.ps1 testar
-powershell -ExecutionPolicy Bypass -File .\backend.ps1 empacotar
-```
-
-`iniciar` carrega as chaves de `.env` (ou usa as variáveis já definidas no
-terminal) e verifica se foram preenchidas antes de executar o backend.
-Use **Ctrl+C** para parar. `testar` executa os testes de persistência.
-
-Execute apenas uma instância do backend por vez. O script verifica se a porta
-ou o banco já estão em uso antes de iniciar. Para carregar mudanças na base
-de conhecimento, pare a instância anterior com **Ctrl+C** (ou **Shift+F5**
-no depurador do VS Code) e execute `iniciar` novamente.
-
-`empacotar` gera o JAR sem executar testes. A opção `ExecutionPolicy Bypass`
-vale apenas para esse processo, sem alterar a política do Windows.
-
-- **Ctrl+Shift+B**: compilar.
-- **Terminal > Run Task**: executar os testes de persistência ou gerar o JAR
-  sem executar testes.
-- No terminal PowerShell:
-
-```powershell
-.\mvnw.cmd compile
-.\mvnw.cmd '-Dtest=ConversationPersistenceServiceTest,ConversationMemoryPersistenceServiceTest' test
-.\mvnw.cmd -DskipTests package
-```
-
-O teste `PortfolioaiApplicationTests` carrega a aplicação inteira e pode acessar
-serviços de IA e o banco configurado. Ele não faz parte da tarefa de persistência.
-`mvnw.cmd test` executa a suíte inteira. O Maven e o Spring Boot não carregam
-automaticamente o `.env` desta configuração de depuração: ao iniciar pelo
-terminal, forneça as variáveis de ambiente na sessão.
-
-## Publicar na web (gratuito)
-
-Frontend no **Vercel**, backend no **Render** e, opcionalmente, banco
-Postgres no **Neon** para guardar o histórico das conversas.
-
-### 1. Backend no Render
-
-1. Envie as alterações para o GitHub.
-2. No Render, escolha **New > Blueprint** e selecione este repositório.
-   O arquivo `render.yaml` cria o serviço com o `Dockerfile` da raiz.
-3. Preencha as variáveis pedidas no painel:
-   - `GEMINI_API_KEY` e `GROQ_API_KEY`: suas chaves.
-   - `ALLOWED_ORIGINS`: o endereço do frontend, por exemplo
-     `https://seusite.vercel.app` (vários endereços separados por vírgula).
-     Se ainda não souber, preencha depois do passo 2 e faça um novo deploy.
-   - `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`: veja o passo 3. Se ficarem
-     vazias, o backend usa H2 em disco temporário, e o histórico é apagado
-     a cada reinício.
-4. Ao terminar, teste `https://<seu-servico>.onrender.com/api/health`;
-   a resposta deve ser `ok`.
-
-No plano gratuito, o serviço "dorme" após cerca de 15 minutos sem acesso.
-A primeira pergunta depois disso pode levar até um minuto. Os embeddings
-do Gemini são gerados de novo a cada inicialização.
-
-### 2. Frontend no Vercel
-
-1. No Vercel, escolha **Add New > Project** e importe o repositório.
-2. Em **Root Directory**, selecione `frontend`. O Vercel detecta o Vite.
-3. Em **Environment Variables**, adicione
-   `VITE_CHAT_API_URL=https://<seu-servico>.onrender.com/api/chat`.
-4. Faça o deploy. Se mudar essa variável depois, faça um novo deploy:
-   o Vite fixa o valor durante o build.
-
-### 3. Banco Postgres no Neon (opcional)
-
-1. Crie um projeto gratuito no Neon e copie os dados de conexão.
-2. No Render, defina:
-   - `DB_URL=jdbc:postgresql://<host>/<banco>?sslmode=require`
-     (o formato `postgresql://usuario:senha@...` do Neon não funciona
-     diretamente; separe usuário e senha nas variáveis abaixo).
-   - `DB_USERNAME` e `DB_PASSWORD`.
-3. As tabelas são criadas automaticamente na primeira inicialização.
-
-### Proteções da API
-
-- Limite de 15 perguntas por minuto por IP e 120 no total
-  (`CHAT_RATE_LIMIT_PER_MINUTE`, `CHAT_GLOBAL_RATE_LIMIT_PER_MINUTE`).
-- Perguntas com no máximo 1000 caracteres (`CHAT_MAX_MESSAGE_LENGTH`).
-- Lembre-se: tudo o que está em `src/main/resources/knowledge` pode ser
-  revelado pela IA a qualquer visitante.
+| Camada | Tecnologias |
+|---|---|
+| Backend | Java 21, Spring Boot 4, Spring MVC, JPA/Hibernate, Maven |
+| IA | Groq, Gemini (respostas e embeddings), RAG, similaridade de cosseno |
+| Banco | PostgreSQL (produção, Neon), H2 (desenvolvimento local) |
+| Frontend | React 19, Vite, react-markdown, Canvas para o fundo animado |
+| Infra | Docker, Render (backend), Vercel (frontend) |
 
 ## Estrutura
 
-- `src/main/java/com/isaac/portfolioai/controller`: endpoints HTTP.
-- `dto`: objetos de entrada e saída da API.
-- `service`: regras de negócio, integrações de IA e busca.
-- `entity` e `repository`: persistência JPA.
-- `model`: modelos internos de conhecimento e memória.
-- `config`: configurações da aplicação, incluindo CORS.
-- `src/main/resources/knowledge`: base de conhecimento em texto.
-- `src/test/java`: testes existentes.
-- `data`: banco H2 e cache locais; ignorados pelo Git.
-- `.vscode`: configurações compartilháveis de execução e tarefas.
+```text
+├── src/main/java/com/isaac/portfolioai
+│   ├── controller    endpoints HTTP (/api/chat, /api/health)
+│   ├── service       IA, RAG, embeddings, memória e persistência
+│   ├── entity        entidades JPA
+│   ├── repository    repositórios JPA
+│   ├── model         modelos internos de conhecimento e memória
+│   ├── dto           entrada e saída da API
+│   └── config        CORS e limite de requisições
+├── src/main/resources/knowledge   base de conhecimento em texto
+├── frontend/                      site em React + Vite
+├── Dockerfile                     imagem do backend
+└── render.yaml                    configuração do Render
+```
 
-## Se o projeto não aparecer corretamente
+## Rodar localmente
 
-Execute **Developer: Reload Window** pela paleta (**Ctrl+Shift+P**).
-Se necessário, use **Java: Clean Java Language Server Workspace** para
-reimportar o projeto. Em **Java: Configure Java Runtime**, confira o JDK 21.
+Requisitos: JDK 21 e Node.js. O Maven não precisa ser instalado, porque o
+projeto inclui o Maven Wrapper.
 
-Referência: [execução e depuração Java no VS Code](https://code.visualstudio.com/docs/java/java-debugging).
+1. Copie `.env.example` para `.env` e preencha `GEMINI_API_KEY` e
+   `GROQ_API_KEY`. Esse arquivo não é versionado.
+2. Inicie o backend em um terminal PowerShell:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\backend.ps1 iniciar
+   ```
+
+3. Em outro terminal, inicie o frontend:
+
+   ```powershell
+   cd frontend
+   npm.cmd ci
+   npm.cmd run dev
+   ```
+
+4. Abra o endereço exibido pelo Vite. O frontend usa
+   `http://localhost:8080/api/chat` por padrão. Para mudar, copie
+   `frontend/.env.example` para `frontend/.env` e ajuste `VITE_CHAT_API_URL`.
+
+Localmente, o banco H2 e o cache de embeddings ficam em `data/`. Na primeira
+execução, o backend chama o Gemini para gerar os embeddings que ainda não estão
+no cache.
+
+Em desenvolvimento, `?erro=404`, `?erro=500` e `?erro=offline` no endereço do
+site mostram cada estado de erro.
+
+### Outros comandos do backend
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\backend.ps1 compilar
+powershell -ExecutionPolicy Bypass -File .\backend.ps1 testar     # testes de persistência
+powershell -ExecutionPolicy Bypass -File .\backend.ps1 empacotar  # gera o JAR sem testes
+```
+
+No VS Code, com o **Extension Pack for Java** e o **Spring Boot Extension Pack**,
+pressione **F5** e escolha **PortfolioAI - Backend**. A configuração já carrega
+o `.env`.
+
+No frontend, `npm.cmd run build` e `npm.cmd run lint` validam o código.
+
+## Publicação
+
+O projeto roda nos planos gratuitos do Vercel, do Render e do Neon.
+
+### Backend no Render
+
+1. No Render, escolha **New > Blueprint** e selecione este repositório.
+   O `render.yaml` cria o serviço com o `Dockerfile` da raiz.
+2. Preencha as variáveis:
+   - `GEMINI_API_KEY` e `GROQ_API_KEY`.
+   - `ALLOWED_ORIGINS`: o endereço do frontend, sem barra no final. Vários
+     endereços podem ser separados por vírgula.
+   - `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`: dados do Postgres. Se ficarem
+     vazias, o backend usa H2 em disco temporário, e o histórico é apagado a
+     cada reinício.
+3. Teste `https://<seu-servico>.onrender.com/api/health`. A resposta deve ser `ok`.
+
+No plano gratuito, o serviço "dorme" depois de cerca de 15 minutos sem acesso,
+e a primeira pergunta depois disso pode levar até um minuto.
+
+### Frontend no Vercel
+
+1. Importe o repositório e escolha `frontend` em **Root Directory**.
+2. Adicione `VITE_CHAT_API_URL=https://<seu-servico>.onrender.com/api/chat`.
+3. Faça o deploy. Se mudar essa variável, faça um novo deploy, porque o Vite
+   fixa o valor durante o build.
+
+### Banco no Neon
+
+1. Crie um projeto, abra **Connect** e desligue **Connection pooling**.
+2. Converta a linha de conexão para o formato JDBC:
+   `DB_URL=jdbc:postgresql://<host>/<banco>?sslmode=require`, com usuário e
+   senha em `DB_USERNAME` e `DB_PASSWORD`.
+3. As tabelas são criadas automaticamente na primeira inicialização.
+
+### Variáveis opcionais
+
+| Variável | Padrão | Uso |
+|---|---|---|
+| `CHAT_RATE_LIMIT_PER_MINUTE` | 15 | perguntas por minuto por visitante |
+| `CHAT_GLOBAL_RATE_LIMIT_PER_MINUTE` | 120 | perguntas por minuto no total |
+| `CHAT_MAX_MESSAGE_LENGTH` | 1000 | tamanho máximo da pergunta |
+
+Tudo o que está em `src/main/resources/knowledge` pode ser revelado pela IA a
+qualquer visitante.
+
+## Outros projetos
+
+- **[Desk-Friends](https://github.com/IsaacCastrooSilva/Desk-Friends)**: um
+  display de mesa que mostra os agentes do Claude Code como invasores em pixel
+  art e avisa quais estão trabalhando, esperando ou ociosos. Em desenvolvimento.
+
+## Autor
+
+**Isaac de Castro Silva**, desenvolvedor back-end ·
+[GitHub](https://github.com/IsaacCastrooSilva)

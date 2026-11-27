@@ -26,8 +26,9 @@ Backend do Theodor AI:
 
 Inteligência Artificial do Theodor AI:
 - Integração com modelos de linguagem.
-- Gemini como provedor principal.
-- Groq como fallback caso o provedor principal esteja indisponível.
+- Groq como provedor principal das respostas, por ser mais rápido.
+- Gemini como fallback caso o Groq esteja indisponível.
+- Gemini também é usado para gerar os embeddings da base de conhecimento.
 
 
 RAG do Theodor AI:
@@ -45,7 +46,7 @@ RAG do Theodor AI:
 Memória conversacional do Theodor AI:
 - A memória conversacional é um componente interno do Theodor AI e não um projeto separado.
 - Identificação das conversas através de conversationId.
-- Persistência do histórico das conversas em banco de dados H2.
+- Persistência do histórico das conversas em banco de dados.
 - Armazenamento das mensagens do usuário e das respostas da IA.
 - Recuperação automática do histórico persistido após reinicialização da aplicação.
 - Uso de uma janela recente do histórico em memória RAM para fornecer contexto à IA.
@@ -58,22 +59,30 @@ Memória conversacional do Theodor AI:
 Persistência do Theodor AI:
 - A camada de persistência das conversas está implementada.
 - O projeto utiliza JPA/Hibernate para persistência.
-- H2 é utilizado atualmente como banco de dados da aplicação.
+- Em produção, o banco de dados é PostgreSQL, hospedado no Neon.
+- No ambiente de desenvolvimento local, o banco de dados é H2.
 - As conversas e mensagens são armazenadas de forma persistente.
 - O histórico pode ser recuperado mesmo após a aplicação ser reiniciada.
 - A memória conversacional também possui informações persistentes.
-- O H2 é a solução utilizada na etapa atual do desenvolvimento.
-- O banco de dados definitivo para produção ainda não está definido.
-- SQL Server não faz parte atualmente da implementação do Theodor AI.
+- SQL Server não faz parte da implementação do Theodor AI.
 
 
 Frontend do Theodor AI:
-- O frontend está sendo desenvolvido com React.
-- O projeto utiliza Vite no ambiente de desenvolvimento do frontend.
-- A primeira interface funcional de chat já foi criada.
-- O frontend já realiza requisições para a API REST do backend em Spring Boot.
+- O frontend é desenvolvido com React e Vite.
+- A interface é o próprio portfólio de Isaac, com o chat do Theodor AI integrado.
+- O frontend realiza requisições para a API REST do backend em Spring Boot.
 - As mensagens enviadas pelo usuário no frontend são processadas pelo backend e as respostas da IA são exibidas na interface.
-- A interface ainda está em desenvolvimento e não deve ser apresentada como concluída.
+- O visual usa uma identidade em pixel art, com modo claro e escuro.
+
+
+Publicação do Theodor AI:
+- O portfólio com o Theodor AI está publicado na internet.
+- Endereço do portfólio: https://about-me-seven-lovat.vercel.app
+- O frontend está hospedado na Vercel.
+- O backend roda em um contêiner Docker hospedado no Render.
+- O banco de dados PostgreSQL está hospedado no Neon.
+- A API possui limite de perguntas por minuto e validação do tamanho das perguntas para evitar uso abusivo.
+- Código-fonte: https://github.com/IsaacCastrooSilva/About-me
 
 
 INTEGRAÇÃO ATUAL DO Theodor AI
@@ -100,7 +109,7 @@ Memória conversacional não é um projeto separado.
 
 A integração com Gemini e Groq não é um projeto separado.
 
-Persistência com JPA/Hibernate e H2 não é um projeto separado.
+Persistência com JPA/Hibernate, H2 e PostgreSQL não é um projeto separado.
 
 Frontend React não é um projeto separado.
 
@@ -114,10 +123,35 @@ Theodor AI.
 Isaac possui experiência profissional com SQL Server, mas isso não significa
 que o Theodor AI utilize ou utilizará SQL Server.
 
-O banco de dados definitivo para produção ainda não está definido.
-
 Se o motivo de uma decisão técnica não estiver informado nesta base, não
 deve ser inventado.
+
+
+==================================================
+DESK-FRIENDS
+==================================================
+
+Tipo: Projeto pessoal.
+
+Desk-Friends é o projeto mais recente de Isaac e está em desenvolvimento.
+
+Repositório do Desk-Friends: https://github.com/IsaacCastrooSilva/Desk-Friends
+
+O Desk-Friends é um display de mesa que mostra os agentes do Claude Code como invasores em pixel art. O Claude Code é uma ferramenta de programação com inteligência artificial da Anthropic, e cada sessão aberta dela funciona como um agente.
+
+Funcionamento do Desk-Friends:
+- Hooks do Claude Code enviam o status de cada sessão para um pequeno servidor.
+- Um painel com tela sensível ao toque mostra quais agentes estão trabalhando, quais estão esperando uma resposta do usuário e quais estão ociosos.
+- Cada agente aparece no painel como um invasor em pixel art.
+- O painel roda em um Raspberry Pi, em um celular antigo ou em qualquer navegador.
+
+Objetivo do Desk-Friends:
+- Permitir acompanhar, com uma olhada rápida na mesa, o que cada agente de IA está fazendo, sem precisar abrir cada sessão.
+- Avisar quando algum agente está parado esperando uma resposta.
+
+Sobre a implementação do Desk-Friends, as linguagens, frameworks e detalhes
+técnicos ainda não estão descritos nesta base e não devem ser inventados.
+Desk-Friends não faz parte do Theodor AI. São projetos diferentes.
 
 
 ==================================================
@@ -157,6 +191,7 @@ REGRAS PARA IDENTIFICAÇÃO DOS PROJETOS
 Os projetos registrados nesta base são:
 
 - Theodor AI.
+- Desk-Friends.
 - Cantina Escolar.
 - Rodar.
 
