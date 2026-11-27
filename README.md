@@ -170,7 +170,10 @@ qualquer visitante.
 
 - **[Desk-Friends](https://github.com/IsaacCastrooSilva/Desk-Friends)**: um
   display de mesa que mostra os agentes do Claude Code como invasores em pixel
-  art e avisa quais estão trabalhando, esperando ou ociosos. Em desenvolvimento.
+  art e avisa quais estão trabalhando, esperando ou ociosos. Servidor em
+  Node.js sem dependências, atualização em tempo real com Server-Sent Events e
+  painel em JavaScript puro com Canvas. Roda em Raspberry Pi, celular antigo ou
+  navegador. Em desenvolvimento.
 
 ## Autor
 

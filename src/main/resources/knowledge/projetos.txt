@@ -139,18 +139,43 @@ Repositório do Desk-Friends: https://github.com/IsaacCastrooSilva/Desk-Friends
 
 O Desk-Friends é um display de mesa que mostra os agentes do Claude Code como invasores em pixel art. O Claude Code é uma ferramenta de programação com inteligência artificial da Anthropic, e cada sessão aberta dela funciona como um agente.
 
+No código, o Desk-Friends aparece com o nome provisório Agents Deck.
+
 Funcionamento do Desk-Friends:
 - Hooks do Claude Code enviam o status de cada sessão para um pequeno servidor.
 - Um painel com tela sensível ao toque mostra quais agentes estão trabalhando, quais estão esperando uma resposta do usuário e quais estão ociosos.
-- Cada agente aparece no painel como um invasor em pixel art.
+- Cada agente aparece no painel como um invasor em pixel art, com o nome do projeto em que está trabalhando e há quanto tempo está naquele estado.
+- Os agentes que precisam de atenção aparecem primeiro no painel.
+- O painel atualiza sozinho, em tempo real.
 - O painel roda em um Raspberry Pi, em um celular antigo ou em qualquer navegador.
+
+Funcionalidades do Desk-Friends:
+- Ao tocar em um agente, é possível escolher o chapéu e a cor do invasor. A escolha fica salva para cada projeto.
+- Sessões sem atividade por 6 horas são removidas automaticamente.
+- No Raspberry Pi, o painel pode abrir sozinho em tela cheia (modo quiosque) quando o aparelho liga.
+- Possui um modo de demonstração que envia agentes fictícios para mostrar o painel funcionando.
+
+Status dos agentes no Desk-Friends:
+- Trabalhando: quando o usuário envia uma pergunta ou o agente usa uma ferramenta.
+- Precisa de você: quando o Claude Code envia uma notificação pedindo atenção.
+- Ocioso: quando a sessão começa ou o agente termina a tarefa.
+- A sessão some do painel quando é encerrada.
+
+Tecnologias do Desk-Friends:
+- Node.js 18 ou superior no servidor.
+- O servidor não usa nenhuma dependência externa, apenas o módulo HTTP nativo do Node.js.
+- Server-Sent Events (SSE) para enviar o estado dos agentes ao painel em tempo real.
+- API HTTP própria para receber os eventos dos hooks, salvar a aparência dos agentes e limpar o painel.
+- HTML, CSS e JavaScript puros no painel, sem frameworks.
+- Canvas 2D para desenhar os invasores em pixel art de 16 por 16 pixels.
+- Hooks do Claude Code com um script em Bash que usa curl para enviar os eventos.
+- Arquivo JSON para guardar o estado dos agentes e a aparência escolhida para cada projeto.
+- Chromium em modo quiosque no Raspberry Pi.
 
 Objetivo do Desk-Friends:
 - Permitir acompanhar, com uma olhada rápida na mesa, o que cada agente de IA está fazendo, sem precisar abrir cada sessão.
 - Avisar quando algum agente está parado esperando uma resposta.
 
-Sobre a implementação do Desk-Friends, as linguagens, frameworks e detalhes
-técnicos ainda não estão descritos nesta base e não devem ser inventados.
 Desk-Friends não faz parte do Theodor AI. São projetos diferentes.
 
 
