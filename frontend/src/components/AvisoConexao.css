@@ -1,0 +1,11 @@
+/* Aviso de conexão: cartão de terminal flutuando na base da tela. */
+.aviso-conexao-area { position: fixed; left: 50%; bottom: var(--space-5); z-index: 90; width: min(100% - 2 * var(--gutter), 440px); transform: translateX(-50%); pointer-events: none; }
+.aviso-conexao { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-4) var(--space-5); border: 1px solid var(--borda); border-left: 3px solid var(--pixel-r); background: var(--superficie); box-shadow: var(--shadow-panel); pointer-events: auto; animation: aviso-entrar 260ms steps(4) both; }
+.aviso-conexao .pixels { margin-top: 7px; }
+.aviso-conexao:not(.aviso-online) .pixels i { background: var(--pixel-r); }
+.aviso-online { border-left-color: var(--pixel-g); }
+.aviso-titulo { margin: 0 0 2px; font: var(--text-sm)/1.6 var(--font-mono); color: var(--texto); }
+.aviso-prompt { color: var(--pixel-r); }
+.aviso-online .aviso-prompt { color: var(--pixel-g); }
+.aviso-texto { margin: 0; font-size: var(--text-sm); line-height: 1.55; color: var(--texto-suave); }
+@keyframes aviso-entrar { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

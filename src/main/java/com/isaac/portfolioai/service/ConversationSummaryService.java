@@ -126,11 +126,9 @@ public class ConversationSummaryService {
         );
 
         System.out.println(
-                "Resumo:"
-        );
-
-        System.out.println(
-                novoResumo
+                "Tamanho do resumo: "
+                        + novoResumo.length()
+                        + " caracteres"
         );
 
         System.out.println(

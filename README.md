@@ -87,6 +87,58 @@ serviços de IA e o banco configurado. Ele não faz parte da tarefa de persistê
 automaticamente o `.env` desta configuração de depuração: ao iniciar pelo
 terminal, forneça as variáveis de ambiente na sessão.
 
+## Publicar na web (gratuito)
+
+Frontend no **Vercel**, backend no **Render** e, opcionalmente, banco
+Postgres no **Neon** para guardar o histórico das conversas.
+
+### 1. Backend no Render
+
+1. Envie as alterações para o GitHub.
+2. No Render, escolha **New > Blueprint** e selecione este repositório.
+   O arquivo `render.yaml` cria o serviço com o `Dockerfile` da raiz.
+3. Preencha as variáveis pedidas no painel:
+   - `GEMINI_API_KEY` e `GROQ_API_KEY`: suas chaves.
+   - `ALLOWED_ORIGINS`: o endereço do frontend, por exemplo
+     `https://seusite.vercel.app` (vários endereços separados por vírgula).
+     Se ainda não souber, preencha depois do passo 2 e faça um novo deploy.
+   - `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`: veja o passo 3. Se ficarem
+     vazias, o backend usa H2 em disco temporário, e o histórico é apagado
+     a cada reinício.
+4. Ao terminar, teste `https://<seu-servico>.onrender.com/api/health`;
+   a resposta deve ser `ok`.
+
+No plano gratuito, o serviço "dorme" após cerca de 15 minutos sem acesso.
+A primeira pergunta depois disso pode levar até um minuto. Os embeddings
+do Gemini são gerados de novo a cada inicialização.
+
+### 2. Frontend no Vercel
+
+1. No Vercel, escolha **Add New > Project** e importe o repositório.
+2. Em **Root Directory**, selecione `frontend`. O Vercel detecta o Vite.
+3. Em **Environment Variables**, adicione
+   `VITE_CHAT_API_URL=https://<seu-servico>.onrender.com/api/chat`.
+4. Faça o deploy. Se mudar essa variável depois, faça um novo deploy:
+   o Vite fixa o valor durante o build.
+
+### 3. Banco Postgres no Neon (opcional)
+
+1. Crie um projeto gratuito no Neon e copie os dados de conexão.
+2. No Render, defina:
+   - `DB_URL=jdbc:postgresql://<host>/<banco>?sslmode=require`
+     (o formato `postgresql://usuario:senha@...` do Neon não funciona
+     diretamente; separe usuário e senha nas variáveis abaixo).
+   - `DB_USERNAME` e `DB_PASSWORD`.
+3. As tabelas são criadas automaticamente na primeira inicialização.
+
+### Proteções da API
+
+- Limite de 15 perguntas por minuto por IP e 120 no total
+  (`CHAT_RATE_LIMIT_PER_MINUTE`, `CHAT_GLOBAL_RATE_LIMIT_PER_MINUTE`).
+- Perguntas com no máximo 1000 caracteres (`CHAT_MAX_MESSAGE_LENGTH`).
+- Lembre-se: tudo o que está em `src/main/resources/knowledge` pode ser
+  revelado pela IA a qualquer visitante.
+
 ## Estrutura
 
 - `src/main/java/com/isaac/portfolioai/controller`: endpoints HTTP.

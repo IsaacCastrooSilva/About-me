@@ -45,6 +45,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- PostgreSQL (produção, opcional via DB_URL) -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- Testes gerais -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

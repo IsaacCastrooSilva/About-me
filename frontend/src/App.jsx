@@ -9,12 +9,18 @@ import Pixels from "./components/Pixels";
 import PixelField from "./components/PixelField";
 import RespostaDigitada from "./components/RespostaDigitada";
 import Icon from "./components/Icon";
+import AvisoConexao from "./components/AvisoConexao";
 import useReveal from "./hooks/useReveal";
 import useReducedMotion from "./hooks/useReducedMotion";
 import sugerirContinuacoes from "./continuacoes";
 import "./App.css";
 
 const API_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:8080/api/chat";
+const MAX_PERGUNTA = 1000;
+const ERRO_PADRAO = "Não consegui obter uma resposta agora. Tente de novo em alguns instantes.";
+const ERRO_LIMITE = "Muitas perguntas seguidas. Aguarde um minuto e tente de novo.";
+const ERRO_OFFLINE = "Você está sem internet. Assim que a conexão voltar, é só tentar de novo.";
+const ERRO_DEMORA = "O servidor demorou para responder. Ele pode estar acordando depois de um tempo parado: tente de novo em alguns segundos.";
 
 const sugestoes = [
   { titulo: "Quem é o Isaac?", pergunta: "Quem é o Isaac?" },
@@ -35,7 +41,7 @@ function criarConversa() {
   return { id: crypto.randomUUID(), titulo: "Nova conversa", mensagens: [] };
 }
 
-function App() {
+function App({ previaOffline = false }) {
   useReveal();
   const reduzir = useReducedMotion();
   // Conversas desta sessão: cada uma tem seu próprio contexto na API.
@@ -144,14 +150,18 @@ function App() {
         body: JSON.stringify({ message: texto, conversationId: id }),
         signal: controller.signal,
       });
-      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+      if (!response.ok) throw new Error(response.status === 429 ? ERRO_LIMITE : `Erro HTTP: ${response.status}`);
       const data = await response.json();
       if (typeof data.answer !== "string" || !data.answer.trim()) throw new Error("Resposta vazia do servidor");
       atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", texto: data.answer, digitando: !reduzir }] }));
       setPulso((atual) => atual + 1);
-    } catch {
+    } catch (erro) {
       // O campo continua vazio; a pergunta fica guardada no erro para reenviar.
-      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: "Não consegui obter uma resposta agora. Tente de novo em alguns instantes.", pergunta: texto }] }));
+      const aviso = !navigator.onLine ? ERRO_OFFLINE
+        : erro?.name === "AbortError" ? ERRO_DEMORA
+        : erro?.message === ERRO_LIMITE ? ERRO_LIMITE
+        : ERRO_PADRAO;
+      atualizar((item) => ({ ...item, mensagens: [...item.mensagens, { autor: "ai", erro: true, texto: aviso, pergunta: texto }] }));
     } finally {
       clearTimeout(timeout);
       requisicaoRef.current = null;
@@ -179,6 +189,7 @@ function App() {
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
       <PixelField pensando={carregando} pulso={pulso} />
       <Navigation />
+      <AvisoConexao forcar={previaOffline} />
       <button className="fundo-sidebar" aria-label="Fechar conversas" tabIndex={-1} onClick={fecharMenu} />
       <aside className="sidebar" id="historico" aria-label="Conversas">
         <div className="sidebar-logo"><Pixels /><strong>Conversas</strong><button className="icone-botao alternar-sidebar" onClick={() => { setSidebarRecolhida(true); requestAnimationFrame(() => menuRef.current?.focus()); }} aria-expanded={!sidebarRecolhida} aria-controls="conteudo-sidebar" aria-label={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"} title={sidebarRecolhida ? "Expandir sidebar" : "Recolher sidebar"}><Icon nome="panel" /></button><button className="icone-botao fechar-sidebar" onClick={fecharMenu} aria-label="Fechar conversas"><Icon nome="close" /></button></div>
@@ -209,7 +220,7 @@ function App() {
               const lista = mensagensRef.current;
               if (lista && lista.scrollHeight - lista.scrollTop - lista.clientHeight > 4) acompanharMensagensRef.current = false;
             }} role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">{conversa.mensagens.map((mensagem,index) => <article key={index} className={"mensagem " + mensagem.autor + (mensagem.erro ? " erro" : "")} aria-label={mensagem.autor === "user" ? "Você" : "Theodor AI"}><div className="autor" aria-hidden="true">{mensagem.autor === "ai" ? <><Pixels />Theodor</> : "Você"}</div>{mensagem.autor !== "ai" ? <p>{mensagem.texto}</p> : mensagem.digitando ? <RespostaDigitada texto={mensagem.texto} aoAvancar={rolarParaFim} aoTerminar={() => terminarDigitacao(conversa.id, index)} /> : <div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{mensagem.texto}</ReactMarkdown></div>}{mensagem.erro && mensagem.pergunta && index === conversa.mensagens.length - 1 && <button type="button" className="tentar-novamente" disabled={carregando} onClick={() => enviarMensagem(mensagem.pergunta)}>Tentar de novo</button>}</article>)}{carregando && <div className="resposta-pendente" role="status"><Pixels animado />Buscando nas minhas informações…</div>}{continuacoes.length > 0 && <div className="continuacoes"><p className="rotulo" id="continuacoes-titulo">Continue por aqui</p><ul aria-labelledby="continuacoes-titulo">{continuacoes.map(item => <li key={item}><button type="button" onClick={() => enviarMensagem(item)}>{item}<Icon nome="arrowRight" /></button></li>)}</ul></div>}</div>}
-            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><label className="compositor-prompt" htmlFor="pergunta" aria-hidden="true">&gt;</label><div className="campo-terminal"><div className="terminal-espelho" ref={espelhoRef} aria-hidden="true">{[...pergunta].flatMap((letra, indice) => [indice === cursor && cursorVisivel ? <span key="cursor" className="cursor-bloco" /> : null, <span key={indice} className="tecla">{letra}</span>])}{cursor >= pergunta.length && cursorVisivel && <span className="cursor-bloco" />}{"​"}</div><textarea id="pergunta" ref={entradaRef} aria-label="Sua pergunta para o Theodor AI" aria-describedby="ajuda-pergunta" placeholder="Escreva sua pergunta" value={pergunta} onChange={e => { setPergunta(e.target.value); setCursor(e.target.selectionStart); }} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} onFocus={() => setFocado(true)} onBlur={() => setFocado(false)} onScroll={e => { if (espelhoRef.current) espelhoRef.current.scrollTop = e.currentTarget.scrollTop; }} rows={1} readOnly={carregando} spellCheck={false} /></div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
+            <form className="compositor" aria-busy={carregando} onSubmit={e => { e.preventDefault(); enviarMensagem(); }}><label className="compositor-prompt" htmlFor="pergunta" aria-hidden="true">&gt;</label><div className="campo-terminal"><div className="terminal-espelho" ref={espelhoRef} aria-hidden="true">{[...pergunta].flatMap((letra, indice) => [indice === cursor && cursorVisivel ? <span key="cursor" className="cursor-bloco" /> : null, <span key={indice} className="tecla">{letra}</span>])}{cursor >= pergunta.length && cursorVisivel && <span className="cursor-bloco" />}{"​"}</div><textarea id="pergunta" ref={entradaRef} aria-label="Sua pergunta para o Theodor AI" aria-describedby="ajuda-pergunta" placeholder="Escreva sua pergunta" value={pergunta} onChange={e => { setPergunta(e.target.value); setCursor(e.target.selectionStart); }} onKeyDown={e => { if(e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); enviarMensagem(); } }} onFocus={() => setFocado(true)} onBlur={() => setFocado(false)} onScroll={e => { if (espelhoRef.current) espelhoRef.current.scrollTop = e.currentTarget.scrollTop; }} rows={1} maxLength={MAX_PERGUNTA} readOnly={carregando} spellCheck={false} /></div><button className="enviar" type="submit" disabled={carregando || !pergunta.trim()} aria-label={carregando ? "Montando sua resposta" : "Enviar pergunta"} title="Enviar pergunta"><Icon nome="arrow" /></button></form>
             <p id="ajuda-pergunta" className="campo-ajuda"><kbd>Enter</kbd> envia · <kbd>Shift</kbd> + <kbd>Enter</kbd> quebra a linha</p>
             {!iniciou && <div className="perguntas-basicas"><p className="rotulo" id="sugestoes-titulo">Ou comece por aqui</p><ul aria-labelledby="sugestoes-titulo">{sugestoes.map((item, indice) => <li key={item.titulo}><button disabled={carregando} onClick={() => enviarMensagem(item.pergunta)}><span className="sugestao-numero" aria-hidden="true">{String(indice + 1).padStart(2, "0")}</span><span>{item.titulo}</span><Icon nome="arrowRight" /></button></li>)}</ul></div>}
           </div>

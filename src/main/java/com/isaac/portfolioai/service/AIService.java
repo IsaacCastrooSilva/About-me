@@ -82,8 +82,9 @@ public class AIService {
         );
 
         System.out.println(
-                "Pergunta: "
-                        + pergunta
+                "Tamanho da pergunta: "
+                        + pergunta.length()
+                        + " caracteres"
         );
 
         System.out.println(

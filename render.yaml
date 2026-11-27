@@ -1,0 +1,26 @@
+# Blueprint do Render: Dashboard > New > Blueprint > selecione este repositório.
+# Os valores com sync: false são pedidos no painel e nunca ficam no Git.
+services:
+  - type: web
+    name: portfolioai-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      # Domínio do frontend, ex.: https://seusite.vercel.app
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # Opcional: Postgres (Neon). Deixe vazio para usar H2 temporário.
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false

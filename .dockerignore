@@ -1,0 +1,13 @@
+# Somente pom.xml e src são necessários para o build do backend.
+.git
+.env
+.env.*
+.vscode
+.mvn
+data
+target
+frontend
+*.md
+*.ps1
+mvnw
+mvnw.cmd
